@@ -88,12 +88,6 @@ void connectWiFi() {
 
 // ─── POST to webhook server ──────────────────────────────────────────────────
 void postToWebhook(const HelmetPacket &pkt, float rssi, float snr) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[POST] WiFi not connected — skipping");
-    postErrCount++;
-    return;
-  }
-
   // Build JSON
   JsonDocument doc;
   // Null-terminate helmetId safely
@@ -112,6 +106,17 @@ void postToWebhook(const HelmetPacket &pkt, float rssi, float snr) {
   doc["rssi"]       = (int)rssi;
   doc["snr"]        = snr;
   doc["seqNum"]     = pkt.seqNum;
+
+  // Print JSON to serial for Serial Bridge
+  Serial.print("[BRIDGE_JSON]:");
+  serializeJson(doc, Serial);
+  Serial.println();
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[POST] WiFi not connected — skipping webhook POST");
+    postErrCount++;
+    return;
+  }
 
   String json;
   serializeJson(doc, json);

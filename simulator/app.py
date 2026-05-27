@@ -10,13 +10,14 @@ from __future__ import annotations
 import secrets
 import time
 import tkinter as tk
-from typing import Callable
+from typing import Callable, Optional
 
 import customtkinter as ctk
 from PIL import Image
 
 from simulator import HelmetSimulator, SimConfig, THAI_PRESETS, GPS_MODES
 from qr_generator import build_tr005, make_qr_image
+from serial_bridge import SerialBridge, get_serial_ports
 
 # ─── Theme ───────────────────────────────────────────────────────────────
 ctk.set_appearance_mode("dark")
@@ -36,11 +37,12 @@ class SimulatorApp(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
         self.title("HELIX  ESP32 Simulator")
-        self.geometry("680x940")
+        self.geometry("680x980")
         self.minsize(620, 720)
 
         self.cfg = SimConfig()
         self.sim = HelmetSimulator(self.cfg, log_fn=self._enqueue_log)
+        self.bridge: Optional[SerialBridge] = None
 
         # Internal: track entry vars so we can sync from sim state
         self._lat_var = tk.StringVar(value=f"{self.cfg.lat:.6f}")
@@ -48,6 +50,7 @@ class SimulatorApp(ctk.CTk):
         self._suppress_sync = False  # avoid feedback loops
 
         self._build_ui()
+        self._refresh_ports()
         self._tick_ui()  # start UI poll
 
     # ──────────────────────────────────────────────────────────────────
@@ -250,6 +253,57 @@ class SimulatorApp(ctk.CTk):
             font=ctk.CTkFont(family="Consolas", size=11),
         )
         self.tx_status_lbl.pack(side="right", fill="x", expand=True, padx=(8, 0))
+
+        # ─── Serial Bridge ─
+        sec_bridge = self._section(scroll, "Serial Bridge  ·  ESP Receiver")
+
+        row_port = self._row(sec_bridge)
+        self._row_label(row_port, "Serial Port")
+        self.port_menu = ctk.CTkOptionMenu(
+            row_port,
+            values=["(No ports detected)"],
+            fg_color=("#e5e7eb", "#0f172a"),
+            button_color=("#d1d5db", "#1e293b"),
+            button_hover_color=("#cbd5e1", "#334155"),
+        )
+        self.port_menu.pack(side="left", fill="x", expand=True, padx=(0, 8))
+
+        self.refresh_ports_btn = ctk.CTkButton(
+            row_port, text="🔄  Refresh", command=self._refresh_ports,
+            fg_color="transparent", border_width=1,
+            border_color=("#d1d5db", "#334155"),
+            text_color=("#1f2937", "#e5e7eb"),
+            hover_color=("#e5e7eb", "#1f2937"),
+            width=90, height=28,
+        )
+        self.refresh_ports_btn.pack(side="right")
+
+        row_baud = self._row(sec_bridge)
+        self._row_label(row_baud, "Baud Rate")
+        self.baud_menu = ctk.CTkOptionMenu(
+            row_baud,
+            values=["9600", "19200", "38400", "57600", "115200"],
+            fg_color=("#e5e7eb", "#0f172a"),
+            button_color=("#d1d5db", "#1e293b"),
+            button_hover_color=("#cbd5e1", "#334155"),
+        )
+        self.baud_menu.set("115200")
+        self.baud_menu.pack(side="left", fill="x", expand=True)
+
+        row_btn = self._row(sec_bridge)
+        self.bridge_btn = ctk.CTkButton(
+            row_btn, text="▶  Start Bridge", command=self._toggle_bridge,
+            fg_color=SUCCESS, hover_color=SUCCESS_HV,
+            font=ctk.CTkFont(size=13, weight="bold"),
+            width=140, height=34,
+        )
+        self.bridge_btn.pack(side="left", padx=(0, 8))
+
+        self.bridge_status_lbl = ctk.CTkLabel(
+            row_btn, text="Bridge: Offline", text_color=MUTED, anchor="w",
+            font=ctk.CTkFont(family="Consolas", size=11),
+        )
+        self.bridge_status_lbl.pack(side="left", fill="x", expand=True)
 
         # ─── Activity Log ─
         sec = self._section(scroll, "Activity Log")
@@ -459,6 +513,44 @@ class SimulatorApp(ctk.CTk):
             self.start_btn.configure(text="■  Stop", fg_color=DANGER, hover_color=DANGER_HV)
             self.status_pill.configure(text="●  Live", text_color=SUCCESS)
 
+    def _refresh_ports(self) -> None:
+        ports = get_serial_ports()
+        if not ports:
+            self.port_menu.configure(values=["(No ports detected)"])
+            self.port_menu.set("(No ports detected)")
+        else:
+            self.port_menu.configure(values=ports)
+            curr = self.port_menu.get()
+            if curr in ports:
+                self.port_menu.set(curr)
+            else:
+                self.port_menu.set(ports[0])
+
+    def _toggle_bridge(self) -> None:
+        if self.bridge and self.bridge.is_running():
+            self.bridge.stop()
+            self.bridge_btn.configure(text="▶  Start Bridge", fg_color=SUCCESS, hover_color=SUCCESS_HV)
+            self.bridge_status_lbl.configure(text="Bridge: Offline", text_color=MUTED)
+        else:
+            port = self.port_menu.get()
+            if port == "(No ports detected)":
+                self._enqueue_log("Bridge: Cannot start, no serial port selected.")
+                return
+            try:
+                baud = int(self.baud_menu.get())
+            except ValueError:
+                baud = 115200
+            self.bridge = SerialBridge(
+                port=port,
+                baudrate=baud,
+                webhook_url=self.cfg.webhook_url,
+                auth_token=self.cfg.auth_token,
+                log_fn=self._enqueue_log,
+            )
+            self.bridge.start()
+            self.bridge_btn.configure(text="■  Stop Bridge", fg_color=DANGER, hover_color=DANGER_HV)
+            self.bridge_status_lbl.configure(text="Bridge: Active", text_color=SUCCESS)
+
     # ──────────────────────────────────────────────────────────────────
     #  Logging (thread-safe)
     # ──────────────────────────────────────────────────────────────────
@@ -505,6 +597,12 @@ class SimulatorApp(ctk.CTk):
             self._lat_var.set(f"{self.cfg.lat:.6f}")
             self._lng_var.set(f"{self.cfg.lng:.6f}")
             self._suppress_sync = False
+
+        # Update bridge status if it stops unexpectedly
+        if self.bridge:
+            if not self.bridge.is_running():
+                self.bridge_btn.configure(text="▶  Start Bridge", fg_color=SUCCESS, hover_color=SUCCESS_HV)
+                self.bridge_status_lbl.configure(text="Bridge: Offline", text_color=MUTED)
 
         self.after(400, self._tick_ui)
 

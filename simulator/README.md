@@ -81,6 +81,20 @@ Run multiple instances (each in its own terminal) with different
 `Helmet ID` values. Each will appear as a separate helmet card in the
 Flutter app.
 
+## Serial Bridge (ESP Receiver)
+
+If you are using a physical Heltec LoRa 32 V2 receiver connected to your PC over USB, you can use the **Serial Bridge** feature to read the incoming LoRa packets from the receiver and forward them directly to the local Express webhook server:
+
+1. Flash the updated `firmware/receiver/receiver.ino` to the receiver board.
+2. Connect the receiver board to your PC via a USB cable.
+3. Open the Simulator App.
+4. Under the **Serial Bridge · ESP Receiver** section:
+   - Click **🔄 Refresh** to scan for connected COM/serial ports.
+   - Choose the correct port for the receiver (e.g., `COM3` on Windows).
+   - Select `115200` baud rate.
+   - Click **▶ Start Bridge**.
+5. Telemetry received by the physical board over LoRa will be printed to Serial as JSON, read by the bridge, and forwarded to the local webhook.
+
 ## Files
 
 | File | Purpose |
@@ -88,5 +102,6 @@ Flutter app.
 | `main.py` | Entry point |
 | `app.py` | customtkinter UI |
 | `simulator.py` | Headless TX engine (GPS + payload + HTTP) |
+| `serial_bridge.py` | Serial bridge engine to link ESP receiver |
 | `qr_generator.py` | TR005 QR string + PIL image renderer |
 | `requirements.txt` | Python dependencies |
