@@ -1,0 +1,58 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "smhelmet-67",
+          "appId": "1:248076275717:android:187e717838d87f21d6cc6c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "smhelmet-67",
+          "configurations": {
+            "ios": "1:248076275717:ios:ed8ef29a79570027d6cc6c",
+            "web": "1:248076275717:web:5f7cdf2f185e48b8d6cc6c",
+            "windows": "1:248076275717:web:0ec986cf8ecd42cad6cc6c"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "helix SMH",
+        "supportEmail": ""
+      }
+    }
+  }
+}

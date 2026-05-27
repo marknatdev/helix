@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// Smart Helmet Guard — multi-tenant rules (see docs/03_FIRESTORE_SCHEMA.md).
+// All writes go through Cloud Functions; clients only read.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function memberOfSite(siteId) {
+      return isAuthed() && siteId in userDoc().siteIds;
+    }
+
+    function isSupervisor(siteId) {
+      return memberOfSite(siteId)
+        && userDoc().role in ['supervisor', 'safety', 'admin'];
+    }
+
+    // Users can read/update only their own profile.
+    // They may create their doc and update `helmetIds` array.
+    match /users/{uid} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow create: if isAuthed() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['helmetIds']);
+      allow update: if isAuthed() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['helmetIds']);
+      allow delete: if false;
+    }
+
+    // Everything scoped to a site.
+    match /sites/{siteId}/{document=**} {
+      allow read: if memberOfSite(siteId);
+      // All writes via Cloud Functions with admin privileges.
+      allow write: if false;
+    }
+
+    // Supervisors may acknowledge their site's alerts.
+    match /sites/{siteId}/alerts/{alertId} {
+      allow update: if isSupervisor(siteId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['acknowledged', 'acknowledgedBy', 'acknowledgedAt']);
+    }
+
+    // ─── LoRaWAN helmet telemetry (written by local webhook server) ──────
+    match /helmets/{helmetId} {
+      allow read: if isAuthed()
+        && helmetId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.helmetIds;
+      allow write: if false;  // Only admin SDK (local server) writes.
+    }
+
+    // Top-level alerts collection for device-generated alerts.
+    match /alerts/{alertId} {
+      allow read: if isAuthed();
+      // Authenticated users may mark alerts as resolved.
+      allow update: if isAuthed()
+        && request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['resolved']);
+      allow create, delete: if false;  // Only admin SDK creates.
+    }
+  }
+}
