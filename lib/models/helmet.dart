@@ -38,7 +38,6 @@ class Helmet {
   HelmetStatus status;
   double battery; // 0-100
   double signal; // 0-100
-  double heartRate;
   double impactG;
   double lat;
   double lng;
@@ -57,7 +56,6 @@ class Helmet {
     required this.status,
     required this.battery,
     required this.signal,
-    required this.heartRate,
     required this.impactG,
     required this.lat,
     required this.lng,
@@ -78,7 +76,6 @@ class Helmet {
         status: HelmetStatus.offline,
         battery: 0,
         signal: 0,
-        heartRate: 0,
         impactG: 0,
         lat: 0,
         lng: 0,
@@ -98,7 +95,6 @@ class Helmet {
       status: _parseStatus(d['status'] as String? ?? 'offline'),
       battery: (d['battery'] as num?)?.toDouble() ?? 0,
       signal: (d['signal'] as num?)?.toDouble() ?? 0,
-      heartRate: (d['heartRate'] as num?)?.toDouble() ?? 0,
       impactG: (d['impactG'] as num?)?.toDouble() ?? 0,
       lat: (d['lat'] as num?)?.toDouble() ?? 0,
       lng: (d['lng'] as num?)?.toDouble() ?? 0,

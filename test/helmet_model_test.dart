@@ -50,7 +50,6 @@ void main() {
         'status': 'active',
         'battery': 95.0,
         'signal': 85.0,
-        'heartRate': 72.0,
         'impactG': 0.1,
         'lat': 13.75,
         'lng': 100.5,
@@ -70,7 +69,6 @@ void main() {
       expect(h.status, HelmetStatus.active);
       expect(h.battery, 95.0);
       expect(h.signal, 85.0);
-      expect(h.heartRate, 72.0);
       expect(h.impactG, 0.1);
       expect(h.lat, 13.75);
       expect(h.lng, 100.5);

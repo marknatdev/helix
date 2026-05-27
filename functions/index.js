@@ -84,7 +84,6 @@ function parseLpp(obj) {
   if (obj.analogOutput_3 !== undefined) out.heading = obj.analogOutput_3;
   if (obj.analogOutput_4 !== undefined) out.battery = obj.analogOutput_4;
   if (obj.digitalInput_5 !== undefined) out.satellites = obj.digitalInput_5;
-  if (obj.analogOutput_6 !== undefined) out.heartRate = obj.analogOutput_6;
 
   return out;
 }
@@ -152,12 +151,9 @@ app.post("/chirpstack-webhook", async (req, res) => {
   const now = admin.firestore.FieldValue.serverTimestamp();
   const signal = rssiToPercent(bestRssi);
   const battery = decoded.battery !== undefined ? decoded.battery : -1;
-  const hr = decoded.heartRate !== undefined ? decoded.heartRate : 0;
 
   let status = "active";
-  if (hr > 140 || (hr > 0 && hr < 50)) {
-    status = "sos";
-  } else if (decoded.speed === 0) {
+  if (decoded.speed === 0) {
     status = "idle";
   }
 
@@ -171,7 +167,6 @@ app.post("/chirpstack-webhook", async (req, res) => {
     heading: decoded.heading !== undefined ? decoded.heading : 0,
     battery,
     signal,
-    heartRate: hr,
     rssi: bestRssi,
     snr: bestSnr,
     satellites: decoded.satellites || 0,
@@ -218,11 +213,6 @@ app.post("/chirpstack-webhook", async (req, res) => {
     if (signal < 30) {
       await maybeAlert("offline", `Weak LoRa signal: ${signal}% (RSSI ${bestRssi} dBm)`);
     }
-    if (hr > 140) {
-      await maybeAlert("sos", `High heart rate detected: ${hr} bpm`);
-    } else if (hr > 0 && hr < 50) {
-      await maybeAlert("sos", `Low heart rate detected: ${hr} bpm`);
-    }
 
     if (alertCount > 0) await alertsBatch.commit();
 
@@ -261,12 +251,9 @@ app.post("/lora-uplink", async (req, res) => {
   const snr  = typeof body.snr  === "number" ? body.snr  : 0;
   const signal = rssiToPercent(rssi);
   const battery = typeof body.battery === "number" ? body.battery : -1;
-  const hr = typeof body.heartRate === "number" ? body.heartRate : 0;
 
   let status = "active";
-  if (hr > 140 || (hr > 0 && hr < 50)) {
-    status = "sos";
-  } else if (body.speed === 0) {
+  if (body.speed === 0) {
     status = "idle";
   }
 
@@ -281,7 +268,6 @@ app.post("/lora-uplink", async (req, res) => {
     heading: typeof body.heading === "number" ? body.heading : 0,
     battery,
     signal,
-    heartRate: hr,
     rssi,
     snr,
     satellites: typeof body.satellites === "number" ? body.satellites : 0,
@@ -325,11 +311,6 @@ app.post("/lora-uplink", async (req, res) => {
     }
     if (signal < 30) {
       await maybeAlert("offline", `Weak LoRa signal: ${signal}% (RSSI ${rssi} dBm)`);
-    }
-    if (hr > 140) {
-      await maybeAlert("sos", `High heart rate detected: ${hr} bpm`);
-    } else if (hr > 0 && hr < 50) {
-      await maybeAlert("sos", `Low heart rate detected: ${hr} bpm`);
     }
 
     if (alertCount > 0) await alertsBatch.commit();

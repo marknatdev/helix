@@ -308,16 +308,6 @@ class _HelmetTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       _MiniMetric(
-                        icon: Icons.favorite_border,
-                        text: helmet.heartRate == 0
-                            ? '—'
-                            : '${helmet.heartRate.round()}',
-                        color: helmet.effectiveStatus == HelmetStatus.sos
-                            ? AppColors.statusSos
-                            : AppColors.mutedFg,
-                      ),
-                      const SizedBox(width: 12),
-                      _MiniMetric(
                         icon: helmet.effectiveStatus == HelmetStatus.offline
                             ? Icons.signal_cellular_off
                             : Icons.signal_cellular_alt,

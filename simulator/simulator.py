@@ -62,8 +62,6 @@ class SimConfig:
     battery: float = 85.0
     auto_drain: bool = False
     drain_rate: float = 0.1     # % per tick
-    heart_rate: float = 78.0
-
     # LoRa signal
     rssi: float = -78.0          # dBm
     snr: float = 8.5             # dB
@@ -198,7 +196,6 @@ class HelmetSimulator:
                 "analogOutput_3": round(self.cfg.heading, 1),
                 "analogOutput_4": round(self.cfg.battery, 1),
                 "digitalInput_5": int(self.cfg.satellites),
-                "analogOutput_6": round(self.cfg.heart_rate, 0),
             },
             "rxInfo": [
                 {

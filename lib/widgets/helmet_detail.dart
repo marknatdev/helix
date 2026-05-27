@@ -50,11 +50,6 @@ class HelmetDetail extends StatelessWidget {
     }
 
     final c = statusColor(h.effectiveStatus);
-    final hrTone = h.heartRate > 110
-        ? AppColors.statusSos
-        : h.heartRate > 95
-            ? AppColors.statusWarn
-            : AppColors.statusOk;
     final batTone = h.battery < 20
         ? AppColors.statusSos
         : h.battery < 40
@@ -178,24 +173,15 @@ class HelmetDetail extends StatelessWidget {
                         ),
                       ]),
                     ),
-                  // 4 metrics, 2 columns for safety in narrow widths
+                  // 3 metrics, 3 columns
                   GridView.count(
-                    crossAxisCount: 2,
+                    crossAxisCount: 3,
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 2.4,
+                    childAspectRatio: 1.6,
                     children: [
-                      _Metric(
-                        icon: Icons.favorite_border,
-                        label: 'Heart rate',
-                        value: h.heartRate == 0
-                            ? '—'
-                            : '${h.heartRate.round()}',
-                        unit: 'bpm',
-                        color: h.heartRate == 0 ? null : hrTone,
-                      ),
                       _Metric(
                         icon: Icons.battery_std,
                         label: 'Battery',

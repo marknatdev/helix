@@ -12,8 +12,8 @@ class FleetStats extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = helmets.length;
     int active = 0, idle = 0, sos = 0, offline = 0;
-    double batSum = 0, hrSum = 0;
-    int onlineCount = 0, hrCount = 0;
+    double batSum = 0;
+    int onlineCount = 0;
     for (final h in helmets) {
       switch (h.effectiveStatus) {
         case HelmetStatus.active:
@@ -32,14 +32,9 @@ class FleetStats extends StatelessWidget {
       if (h.effectiveStatus != HelmetStatus.offline) {
         onlineCount++;
         batSum += h.battery;
-        if (h.heartRate > 0) {
-          hrSum += h.heartRate;
-          hrCount++;
-        }
       }
     }
     final avgBattery = onlineCount == 0 ? 0 : (batSum / onlineCount).round();
-    final avgHeart = hrCount == 0 ? 0 : (hrSum / hrCount).round();
 
     final items = [
       _Stat(
@@ -72,24 +67,16 @@ class FleetStats extends StatelessWidget {
         icon: Icons.battery_std,
         tone: avgBattery < 40 ? _Tone.warn : _Tone.defaultT,
       ),
-      _Stat(
-        label: 'Avg. heart rate',
-        value: '$avgHeart',
-        unit: 'bpm',
-        sub: 'Live biometric feed',
-        icon: Icons.favorite_border,
-        tone: _Tone.defaultT,
-      ),
     ];
 
     return LayoutBuilder(builder: (ctx, bc) {
       int cols;
-      if (bc.maxWidth >= 1200) {
-        cols = 5;
-      } else if (bc.maxWidth >= 700) {
-        cols = 3;
-      } else {
+      if (bc.maxWidth >= 1000) {
+        cols = 4;
+      } else if (bc.maxWidth >= 600) {
         cols = 2;
+      } else {
+        cols = 1;
       }
       return GridView.count(
         crossAxisCount: cols,

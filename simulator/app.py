@@ -198,12 +198,6 @@ class SimulatorApp(ctk.CTk):
         if self.cfg.auto_drain:
             self.drain_switch.select()
 
-        self.hr_slider, self.hr_lbl = self._slider_row(
-            sec, "Heart rate", 50, 180, self.cfg.heart_rate,
-            lambda v: setattr(self.cfg, "heart_rate", float(v)),
-            fmt="{:.0f} bpm",
-        )
-
         # ─── Signal ─
         sec = self._section(scroll, "LoRaWAN Signal")
         self.rssi_slider, self.rssi_lbl = self._slider_row(
