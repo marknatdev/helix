@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 import '../theme/app_theme.dart';
 import 'auth_service.dart';
@@ -218,6 +219,22 @@ class _LoginPageState extends State<LoginPage> {
                             : 'Already have an account? Sign in',
                         style: const TextStyle(
                             color: AppColors.mutedFg, fontSize: 12),
+                      ),
+                    ),
+                    const Divider(color: AppColors.border, height: 24),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          html.window.open('/ppl/', '_blank');
+                        },
+                        child: const Text(
+                          'Privacy Policy',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 11,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ),
                   ],

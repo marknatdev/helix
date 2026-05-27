@@ -42,11 +42,13 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script>
-    // Unregister stale service workers to prevent blank-screen issues
+    // Unregister stale service workers and reload to bypass service worker cache
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for (var registration of registrations) {
-          registration.unregister();
+        if (registrations.length > 0) {
+          Promise.all(registrations.map(r => r.unregister())).then(() => {
+            window.location.reload();
+          });
         }
       });
     }
