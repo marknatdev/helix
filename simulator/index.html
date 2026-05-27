@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HELIX · GPS Map Simulator</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    :root {
+      --bg-darker: #090c15;
+      --bg-dark: #0f1524;
+      --bg-card: #161f33;
+      --border: #263554;
+      --text-main: #f1f5f9;
+      --text-muted: #64748b;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.4);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.3);
+      --warning: #f59e0b;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-outfit);
+      background-color: var(--bg-darker);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* Container layout */
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Sidebar controls */
+    .sidebar {
+      width: 440px;
+      height: 100%;
+      background-color: var(--bg-dark);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+
+    /* Map area */
+    .map-container {
+      flex-grow: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-darker);
+    }
+
+    /* Sidebar Header */
+    .sidebar-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #101726 0%, #0d121e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand i {
+      font-size: 24px;
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand h1 span {
+      color: var(--primary);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background-color: rgba(100, 116, 139, 0.1);
+      color: var(--text-muted);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .status-pill.live {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-pill.live i {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    /* Sidebar Content */
+    .sidebar-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar-content::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    .sidebar-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    /* Sections */
+    .section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(38, 53, 84, 0.5);
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    /* Form controls */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    label span {
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    input, select {
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-family: var(--font-outfit);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    /* Slider specific styling */
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-container input[type="range"] {
+      flex-grow: 1;
+      padding: 0;
+      height: 6px;
+      border: none;
+      background: var(--border);
+      outline: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .slider-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--primary);
+      width: 50px;
+      text-align: right;
+      font-weight: 500;
+    }
+
+    /* Toggle switches */
+    .switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Action Buttons */
+    .btn {
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-family: var(--font-outfit);
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      color: white;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, #047857 100%);
+      color: white;
+      box-shadow: 0 4px 14px var(--success-glow);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+      color: white;
+      box-shadow: 0 4px 14px var(--danger-glow);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(38, 53, 84, 0.3);
+      border-color: var(--primary);
+    }
+
+    /* Activity log */
+    .log-container {
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      height: 150px;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .log-container::-webkit-scrollbar-track {
+      background: var(--bg-darker);
+    }
+    .log-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 8px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-time {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .log-text {
+      color: var(--text-main);
+    }
+
+    .log-text.info {
+      color: var(--primary);
+    }
+
+    .log-text.success {
+      color: var(--success);
+    }
+
+    .log-text.error {
+      color: var(--danger);
+    }
+
+    /* Live stats display row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-box {
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 4px;
+    }
+
+    .stat-val.success {
+      color: var(--success);
+    }
+
+    /* Custom Leaflet Map Popup Styling */
+    .leaflet-popup-content-wrapper {
+      background-color: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .leaflet-popup-tip {
+      background-color: var(--bg-card) !important;
+      border: 1px solid var(--border);
+    }
+    .leaflet-container a {
+      color: var(--primary) !important;
+    }
+
+    /* Overlay map banner */
+    .map-overlay-banner {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(22, 31, 51, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      padding: 12px 18px;
+      border-radius: 10px;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .map-overlay-banner h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .map-overlay-banner p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Thai Preset Dropdown in sidebar */
+    .preset-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .preset-container select {
+      flex-grow: 1;
+    }
+
+    .preset-container button {
+      padding: 10px 12px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-container button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <i class="fa-solid fa-helmet-safety"></i>
+          <h1>HELIX <span>Sim</span></h1>
+        </div>
+        <div id="statusPill" class="status-pill">
+          <i class="fa-solid fa-circle"></i> <span id="statusText">Idle</span>
+        </div>
+      </div>
+
+      <div class="sidebar-content">
+        <!-- CONNECTION SETTINGS -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-network-wired"></i> Webhook Server
+          </div>
+          <div class="form-group">
+            <label>Endpoint URL</label>
+            <input type="text" id="webhookUrl" value="http://localhost:3000/lora-uplink">
+          </div>
+          <div class="form-group">
+            <label>X-Webhook-Token</label>
+            <input type="password" id="webhookToken" value="smarthelmet">
+          </div>
+        </div>
+
+        <!-- DEVICE SETTINGS -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-microchip"></i> Device Configuration
+          </div>
+          <div class="form-group">
+            <label>Helmet ID</label>
+            <input type="text" id="helmetId" value="HLX-001">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Battery <span id="batteryVal">85%</span></label>
+              <div class="slider-container">
+                <input type="range" id="battery" min="0" max="100" value="85">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Satellites <span id="satsVal">9</span></label>
+              <div class="slider-container">
+                <input type="range" id="satellites" min="0" max="16" value="9">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>RSSI <span id="rssiVal">-78 dBm</span></label>
+              <div class="slider-container">
+                <input type="range" id="rssi" min="-120" max="-30" value="-78">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>SNR <span id="snrVal">8.5 dB</span></label>
+              <div class="slider-container">
+                <input type="range" id="snr" min="-10" max="15" step="0.5" value="8.5">
+              </div>
+            </div>
+          </div>
+          
+          <div class="switch-container">
+            <span class="switch-label">Auto-jitter signal strength</span>
+            <label class="switch">
+              <input type="checkbox" id="autoJitter" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- GPS CONFIGURATION -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-location-crosshairs"></i> GPS & Movement
+          </div>
+          
+          <div class="form-group">
+            <label>Location Presets</label>
+            <div class="preset-container">
+              <select id="presetSelect">
+                <option value="Bangkok">Bangkok</option>
+                <option value="Chiang Mai">Chiang Mai</option>
+                <option value="Phuket">Phuket</option>
+                <option value="Khon Kaen">Khon Kaen</option>
+                <option value="Pattaya">Pattaya</option>
+                <option value="Hat Yai">Hat Yai</option>
+                <option value="Ayutthaya">Ayutthaya</option>
+                <option value="Udon Thani">Udon Thani</option>
+                <option value="Nakhon Si">Nakhon Si Thammarat</option>
+                <option value="Krabi">Krabi</option>
+              </select>
+              <button id="applyPresetBtn" title="Go to Preset"><i class="fa-solid fa-location-arrow"></i></button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Latitude</label>
+              <input type="number" step="0.000001" id="lat" value="13.7563">
+            </div>
+            <div class="form-group">
+              <label>Longitude</label>
+              <input type="number" step="0.000001" id="lng" value="100.5018">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Speed <span id="speedVal">3.0 m/s</span></label>
+              <div class="slider-container">
+                <input type="range" id="speed" min="0" max="30" step="0.5" value="3.0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Heading <span id="headingVal">90°</span></label>
+              <div class="slider-container">
+                <input type="range" id="heading" min="0" max="359" value="90">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Movement Mode</label>
+            <select id="simMode">
+              <option value="manual">Manual Pick / Drag Marker</option>
+              <option value="autowalk">Auto-Walk (Continuous along heading)</option>
+              <option value="route">Route (Animate to Destination)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TRANSMISSION PANEL -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-satellite-dish"></i> Telemetry Output
+          </div>
+          
+          <div class="form-group">
+            <label>TX Interval <span id="intervalVal">5s</span></label>
+            <div class="slider-container">
+              <input type="range" id="interval" min="1" max="60" value="5">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <button id="toggleBtn" class="btn btn-success"><i class="fa-solid fa-play"></i> Start Telemetry</button>
+            <button id="sendNowBtn" class="btn btn-secondary"><i class="fa-solid fa-bolt"></i> Send Now</button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-label">Total Sent</div>
+              <div id="txCount" class="stat-val">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Last Status</div>
+              <div id="lastStatus" class="stat-val">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY LOG -->
+        <div class="section-card" style="flex-grow: 1;">
+          <div class="section-title">
+            <i class="fa-solid fa-terminal"></i> Activity Log
+          </div>
+          <div id="logBox" class="log-container">
+            <div class="log-line"><span class="log-time">00:00:00</span><span class="log-text info">Simulator initialised. Click map to place helmet.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT MAP PANEL -->
+    <div class="map-container">
+      <div class="map-overlay-banner">
+        <h2>Interactive GPS Simulator Map</h2>
+        <p>Left Click to set helmet location. Double Click to set route destination.</p>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script>
+    // State management
+    const state = {
+      lat: 13.7563,
+      lng: 100.5018,
+      destLat: null,
+      destLng: null,
+      isRunning: false,
+      txCount: 0,
+      timerId: null,
+      marker: null,
+      destMarker: null,
+      routeLine: null
+    };
+
+    // Major Thai cities — preset GPS centers
+    const THAI_PRESETS = {
+      "Bangkok":     [13.7563, 100.5018],
+      "Chiang Mai":  [18.7883,  98.9853],
+      "Phuket":      [ 7.8804,  98.3923],
+      "Khon Kaen":   [16.4419, 102.8350],
+      "Pattaya":     [12.9236, 100.8825],
+      "Hat Yai":     [ 7.0167, 100.4747],
+      "Ayutthaya":   [14.3692, 100.5876],
+      "Udon Thani":  [17.4138, 102.7872],
+      "Nakhon Si":   [ 8.4304,  99.9633],
+      "Krabi":       [ 8.0863,  98.9063],
+    };
+
+    // Elements
+    const el = {
+      webhookUrl: document.getElementById('webhookUrl'),
+      webhookToken: document.getElementById('webhookToken'),
+      helmetId: document.getElementById('helmetId'),
+      battery: document.getElementById('battery'),
+      batteryVal: document.getElementById('batteryVal'),
+      satellites: document.getElementById('satellites'),
+      satsVal: document.getElementById('satsVal'),
+      rssi: document.getElementById('rssi'),
+      rssiVal: document.getElementById('rssiVal'),
+      snr: document.getElementById('snr'),
+      snrVal: document.getElementById('snrVal'),
+      autoJitter: document.getElementById('autoJitter'),
+      presetSelect: document.getElementById('presetSelect'),
+      applyPresetBtn: document.getElementById('applyPresetBtn'),
+      lat: document.getElementById('lat'),
+      lng: document.getElementById('lng'),
+      speed: document.getElementById('speed'),
+      speedVal: document.getElementById('speedVal'),
+      heading: document.getElementById('heading'),
+      headingVal: document.getElementById('headingVal'),
+      simMode: document.getElementById('simMode'),
+      interval: document.getElementById('interval'),
+      intervalVal: document.getElementById('intervalVal'),
+      toggleBtn: document.getElementById('toggleBtn'),
+      sendNowBtn: document.getElementById('sendNowBtn'),
+      txCount: document.getElementById('txCount'),
+      lastStatus: document.getElementById('lastStatus'),
+      logBox: document.getElementById('logBox'),
+      statusPill: document.getElementById('statusPill'),
+      statusText: document.getElementById('statusText'),
+    };
+
+    // Update Slider Value Displays
+    el.battery.oninput = () => el.batteryVal.textContent = `${el.battery.value}%`;
+    el.satellites.oninput = () => el.satsVal.textContent = el.satellites.value;
+    el.rssi.oninput = () => el.rssiVal.textContent = `${el.rssi.value} dBm`;
+    el.snr.oninput = () => el.snrVal.textContent = `${el.snr.value} dB`;
+    el.speed.oninput = () => el.speedVal.textContent = `${parseFloat(el.speed.value).toFixed(1)} m/s`;
+    el.heading.oninput = () => {
+      el.headingVal.textContent = `${el.heading.value}°`;
+      updateMarkerRot();
+    };
+    el.interval.oninput = () => {
+      el.intervalVal.textContent = `${el.interval.value}s`;
+      if (state.isRunning) {
+        restartTimer();
+      }
+    };
+
+    // Initialize Map
+    const map = L.map('map', {
+      zoomControl: true,
+      doubleClickZoom: false // disable to allow double click route placement
+    }).setView(THAI_PRESETS["Bangkok"], 14);
+
+    // Modern Dark Map Tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 20
+    }).addTo(map);
+
+    // Custom Marker Icons (Neon dots)
+    const helmetIcon = L.divIcon({
+      html: `<div style="
+        width: 18px; 
+        height: 18px; 
+        background: #3b82f6; 
+        border: 3px solid #ffffff; 
+        border-radius: 50%; 
+        box-shadow: 0 0 12px #3b82f6, 0 0 4px #000;
+        transition: transform 0.2s ease-out;
+        transform-origin: center;
+      " id="marker-dot"></div>`,
+      className: 'custom-helmet-marker',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+
+    const destIcon = L.divIcon({
+      html: `<div style="
+        width: 16px; 
+        height: 16px; 
+        background: #ef4444; 
+        border: 2px solid #ffffff; 
+        border-radius: 50%; 
+        box-shadow: 0 0 10px #ef4444;
+      "></div>`,
+      className: 'custom-dest-marker',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
+    });
+
+    // Place Initial Marker
+    state.marker = L.marker([state.lat, state.lng], {
+      icon: helmetIcon,
+      draggable: true
+    }).addTo(map);
+
+    state.marker.bindPopup("<b>HELIX Helmet Node</b><br>Drag me or click map to move.").openPopup();
+
+    // Map Click & Drag Listeners
+    state.marker.on('drag', function(e) {
+      const pos = e.target.getLatLng();
+      updateCoordinates(pos.lat, pos.lng, false);
+    });
+
+    state.marker.on('dragend', function() {
+      addLog("Helmet marker dragged to new location.");
+    });
+
+    map.on('click', function(e) {
+      updateCoordinates(e.latlng.lat, e.latlng.lng, true);
+      addLog("Helmet set to location: " + e.latlng.lat.toFixed(6) + ", " + e.latlng.lng.toFixed(6));
+    });
+
+    map.on('dblclick', function(e) {
+      if (el.simMode.value === 'route') {
+        setDestination(e.latlng.lat, e.latlng.lng);
+      } else {
+        el.simMode.value = 'route';
+        setDestination(e.latlng.lat, e.latlng.lng);
+        addLog("Switched to Route mode.");
+      }
+    });
+
+    // Helper: rotate helmet icon visually on map based on heading
+    function updateMarkerRot() {
+      const dot = document.getElementById('marker-dot');
+      if (dot) {
+        dot.style.transform = `rotate(${el.heading.value}deg)`;
+      }
+    }
+
+    // Update lat/lng inputs & state
+    function updateCoordinates(lat, lng, updateMarker = true) {
+      state.lat = lat;
+      state.lng = lng;
+      el.lat.value = lat.toFixed(6);
+      el.lng.value = lng.toFixed(6);
+      
+      if (updateMarker) {
+        state.marker.setLatLng([lat, lng]);
+      }
+      updateRouteLine();
+    }
+
+    // Apply Location Preset
+    el.applyPresetBtn.onclick = () => {
+      const preset = el.presetSelect.value;
+      const coords = THAI_PRESETS[preset];
+      if (coords) {
+        updateCoordinates(coords[0], coords[1]);
+        map.panTo(coords);
+        addLog(`Applied city preset: ${preset}`);
+      }
+    };
+
+    // Route Mode Destination Setting
+    function setDestination(lat, lng) {
+      state.destLat = lat;
+      state.destLng = lng;
+      
+      if (state.destMarker) {
+        state.destMarker.setLatLng([lat, lng]);
+      } else {
+        state.destMarker = L.marker([lat, lng], {
+          icon: destIcon
+        }).addTo(map);
+        state.destMarker.bindPopup("<b>Route Destination</b>");
+      }
+
+      addLog("Destination set: " + lat.toFixed(6) + ", " + lng.toFixed(6));
+      updateRouteLine();
+      
+      // Calculate bearing to destination immediately
+      const bearing = calculateBearing(state.lat, state.lng, lat, lng);
+      el.heading.value = Math.round(bearing);
+      el.headingVal.textContent = `${el.heading.value}°`;
+      updateMarkerRot();
+    }
+
+    function updateRouteLine() {
+      if (state.destLat && state.destLng) {
+        const points = [
+          [state.lat, state.lng],
+          [state.destLat, state.destLng]
+        ];
+        if (state.routeLine) {
+          state.routeLine.setLatLngs(points);
+        } else {
+          state.routeLine = L.polyline(points, {
+            color: '#3b82f6',
+            weight: 3,
+            dashArray: '5, 8',
+            opacity: 0.7
+          }).addTo(map);
+        }
+      } else if (state.routeLine) {
+        map.removeLayer(state.routeLine);
+        state.routeLine = null;
+      }
+    }
+
+    function clearDestination() {
+      state.destLat = null;
+      state.destLng = null;
+      if (state.destMarker) {
+        map.removeLayer(state.destMarker);
+        state.destMarker = null;
+      }
+      if (state.routeLine) {
+        map.removeLayer(state.routeLine);
+        state.routeLine = null;
+      }
+    }
+
+    // Sim Mode Changed
+    el.simMode.onchange = () => {
+      if (el.simMode.value !== 'route') {
+        clearDestination();
+      }
+      addLog(`Simulation mode changed to: ${el.simMode.value}`);
+    };
+
+    // Manual Coordinates Input Changed
+    el.lat.onchange = () => updateCoordinates(parseFloat(el.lat.value), state.lng);
+    el.lng.onchange = () => updateCoordinates(state.lat, parseFloat(el.lng.value));
+
+    // Logging helper
+    function addLog(text, type = 'info') {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const logLine = document.createElement('div');
+      logLine.className = 'log-line';
+      logLine.innerHTML = `<span class="log-time">${timeStr}</span><span class="log-text ${type}">${escapeHtml(text)}</span>`;
+      
+      el.logBox.appendChild(logLine);
+      el.logBox.scrollTop = el.logBox.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Maths helpers
+    function calculateBearing(lat1, lng1, lat2, lng2) {
+      const p1 = lat1 * Math.PI / 180;
+      const p2 = lat2 * Math.PI / 180;
+      const dl = (lng2 - lng1) * Math.PI / 180;
+      const x = Math.sin(dl) * Math.cos(p2);
+      const y = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+      const b = Math.atan2(x, y) * 180 / Math.PI;
+      return (b + 360) % 360;
+    }
+
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371000; // Earth radius in meters
+      const p1 = lat1 * Math.PI / 180;
+      const p2 = lat2 * Math.PI / 180;
+      const dp = (lat2 - lat1) * Math.PI / 180;
+      const dl = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dp/2) * Math.sin(dp/2) +
+                Math.cos(p1) * Math.cos(p2) *
+                Math.sin(dl/2) * Math.sin(dl/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // GPS Telemetry Tick logic
+    function tick() {
+      const dt = parseInt(el.interval.value); // step size in seconds
+      const speed = parseFloat(el.speed.value);
+      const heading = parseFloat(el.heading.value);
+      const mode = el.simMode.value;
+
+      if (mode === 'autowalk') {
+        // Step forward in heading direction
+        const dist = speed * dt;
+        const rad = heading * Math.PI / 180;
+        const dlat = (dist * Math.cos(rad)) / 111111.0;
+        const dlng = (dist * Math.sin(rad)) / (111111.0 * Math.cos(state.lat * Math.PI / 180));
+        
+        updateCoordinates(state.lat + dlat, state.lng + dlng);
+      } else if (mode === 'route' && state.destLat && state.destLng) {
+        // Move towards target destination
+        const totalDist = calculateDistance(state.lat, state.lng, state.destLat, state.destLng);
+        const stepDist = speed * dt;
+
+        if (totalDist <= stepDist) {
+          // Arrived at destination
+          updateCoordinates(state.destLat, state.destLng);
+          clearDestination();
+          addLog("Helmet arrived at destination! Route simulation completed.");
+        } else {
+          // Walk along segment
+          const bearing = calculateBearing(state.lat, state.lng, state.destLat, state.destLng);
+          el.heading.value = Math.round(bearing);
+          el.headingVal.textContent = `${el.heading.value}°`;
+          updateMarkerRot();
+
+          const rad = bearing * Math.PI / 180;
+          const dlat = (stepDist * Math.cos(rad)) / 111111.0;
+          const dlng = (stepDist * Math.sin(rad)) / (111111.0 * Math.cos(state.lat * Math.PI / 180));
+
+          updateCoordinates(state.lat + dlat, state.lng + dlng);
+        }
+      }
+
+      // Handle Auto-Jitter Signal
+      if (el.autoJitter.checked) {
+        let rssiVal = parseInt(el.rssi.value) + Math.round((Math.random() - 0.5) * 4);
+        rssiVal = Math.max(-120, Math.min(-30, rssiVal));
+        el.rssi.value = rssiVal;
+        el.rssiVal.textContent = `${rssiVal} dBm`;
+
+        let snrVal = parseFloat(el.snr.value) + (Math.random() - 0.5) * 1.0;
+        snrVal = Math.max(-10, Math.min(15, snrVal));
+        el.snr.value = snrVal.toFixed(1);
+        el.snrVal.textContent = `${el.snr.value} dB`;
+      }
+
+      // Auto Pan Map
+      if (mode !== 'manual') {
+        map.panTo([state.lat, state.lng]);
+      }
+
+      // Send uplink request
+      sendUplink();
+    }
+
+    // POST Payload to Webhook Server
+    async function sendUplink() {
+      const url = el.webhookUrl.value;
+      const token = el.webhookToken.value;
+      
+      const payload = {
+        helmetId: el.helmetId.value,
+        lat: parseFloat(state.lat.toFixed(6)),
+        lng: parseFloat(state.lng.toFixed(6)),
+        alt: 12.0, // Fixed alt for simplicity
+        speed: parseFloat(parseFloat(el.speed.value).toFixed(2)),
+        heading: parseFloat(parseFloat(el.heading.value).toFixed(1)),
+        battery: parseInt(el.battery.value),
+        satellites: parseInt(el.satellites.value),
+        rssi: parseInt(el.rssi.value),
+        snr: parseFloat(el.snr.value)
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Webhook-Token': token
+          },
+          body: JSON.stringify(payload)
+        });
+
+        state.txCount++;
+        el.txCount.textContent = state.txCount;
+
+        if (response.ok) {
+          el.lastStatus.textContent = `${response.status}`;
+          el.lastStatus.className = 'stat-val success';
+          addLog(`TX #${state.txCount} [OK] ${payload.helmetId} at ${payload.lat}, ${payload.lng}`, 'success');
+        } else {
+          el.lastStatus.textContent = `${response.status}`;
+          el.lastStatus.className = 'stat-val error';
+          addLog(`TX #${state.txCount} [ERR HTTP ${response.status}] ${response.statusText}`, 'error');
+        }
+      } catch (err) {
+        state.txCount++;
+        el.txCount.textContent = state.txCount;
+        el.lastStatus.textContent = 'ERR';
+        el.lastStatus.className = 'stat-val error';
+        addLog(`TX #${state.txCount} [POST FAILED] ${err.message}`, 'error');
+      }
+    }
+
+    // Lifecycle Controls
+    function startSimulation() {
+      if (state.isRunning) return;
+      state.isRunning = true;
+      
+      el.toggleBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Telemetry';
+      el.toggleBtn.className = 'btn btn-danger';
+      el.statusPill.className = 'status-pill live';
+      el.statusText.textContent = 'Live';
+      
+      // Perform initial tick immediately
+      tick();
+      
+      // Start intervals
+      restartTimer();
+      addLog("GPS map telemetry loop started.");
+    }
+
+    function stopSimulation() {
+      if (!state.isRunning) return;
+      state.isRunning = false;
+      
+      el.toggleBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Telemetry';
+      el.toggleBtn.className = 'btn btn-success';
+      el.statusPill.className = 'status-pill';
+      el.statusText.textContent = 'Idle';
+      
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+      addLog("GPS map telemetry loop stopped.");
+    }
+
+    function restartTimer() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+      }
+      const intervalSec = parseInt(el.interval.value);
+      state.timerId = setInterval(tick, intervalSec * 1000);
+    }
+
+    el.toggleBtn.onclick = () => {
+      if (state.isRunning) {
+        stopSimulation();
+      } else {
+        startSimulation();
+      }
+    };
+
+    el.sendNowBtn.onclick = () => {
+      addLog("Sending immediate manual telemetry uplink...");
+      sendUplink();
+    };
+
+    // Initial marker rotation update
+    updateMarkerRot();
+  </script>
+</body>
+</html>

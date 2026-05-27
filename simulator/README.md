@@ -1,107 +1,53 @@
-# HELIX ESP32 Simulator
+# HELIX GPS Map Simulator
 
-A standalone Python desktop app that simulates a Heltec LoRa 32 v2 helmet
-node and posts ChirpStack-format uplinks directly to your local webhook
-server. Test the full pipeline (webhook → Firestore → Flutter app) without
-any LoRa hardware.
+A modern, web-based interactive GPS map simulator that models a smart helmet node. Pick coordinates visually by clicking on the map, adjust sensors/signals, and stream live telemetry straight to your local webhook server (`/lora-uplink` endpoint).
 
 ```
-[Simulator UI]  ──HTTP POST──▶  [Local webhook server]  ──▶  [Firestore]  ──▶  [Flutter app]
+[Web Map Simulator]  ──HTTP POST (CORS)──▶  [Local Express Webhook]  ──▶  [Firestore]  ──▶  [Flutter App]
 ```
 
 ## Features
 
-- Clean dark UI built with **customtkinter**
-- 10 Thai city presets (Bangkok, Chiang Mai, Phuket, …)
-- 3 GPS movement modes:
-  - **Stationary** — fixed point with tiny GPS noise
-  - **Random walk** — heading drifts ±15° per tick
-  - **Route** — bounces between two waypoints
-- Configurable **battery** with optional auto-drain
-- Configurable **RSSI / SNR** with optional auto-jitter
-- Adjustable **TX interval** (1 – 60 s)
-- Manual **Send Now** button for one-shot tests
-- Live **activity log** with HTTP response status
-- **TR005 QR code generator** — scan in ChirpStack to import the device
+- **Interactive Leaflet Map** — visually click or drag the helmet marker anywhere in the world to instantly update telemetry.
+- **CartoDB Dark Matter** tiles for a high-tech command center visual design.
+- **10 Thai City Presets** (Bangkok, Chiang Mai, Phuket, Pattaya, etc.) to quickly teleport.
+- **3 Simulation Modes**:
+  - **Manual** — update coordinates by clicking or dragging.
+  - **Auto-Walk** — automatically walk continuously in the direction of the `heading` slider.
+  - **Route** — double-click any point on the map to set a Destination waypoint. The simulator will automatically compute the path and animate the helmet node step-by-step along the route.
+- **Sensor Controls** — customize battery, satellites, RSSI, and SNR on the fly.
+- **Signal Jitter** — auto-jitter toggles to add realistic fluctuations to RSSI and SNR.
+- **Transmission Panel** — configure sending interval, toggle live transmission, or trigger manual immediate uplinks.
+- **Real-Time Logs** — inspect every network payload and HTTP response code in the scrolling console.
 
-## Setup
+## Setup & Running
 
-```powershell
-cd d:\helix\simulator
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+No complex Python packages or dependencies are required. The simulator runs on standard libraries.
 
-## Run
+1. **Start the local webhook server** first:
+   ```powershell
+   cd d:\helix\functions
+   node index.js
+   ```
 
-Make sure your local webhook server is running first:
-
-```powershell
-cd d:\helix\functions
-node index.js
-```
-
-Then in another terminal:
-
-```powershell
-cd d:\helix\simulator
-.\.venv\Scripts\Activate.ps1
-python main.py
-```
+2. **Start the Web Simulator**:
+   ```powershell
+   cd d:\helix\simulator
+   python main.py
+   ```
+   *This starts a local lightweight HTTP server on port `8080` and automatically opens your default browser to `http://localhost:8080`.*
 
 ## Usage
 
-1. **Connection** — paste the same `X-Webhook-Token` value you set in
-   `functions/.env`. The default URL targets `http://localhost:3000`.
-2. **Device** — set a unique `Helmet ID` (e.g., `HLX-001`) and `DevEUI`.
-   Each helmet ID becomes one document in Firestore at `helmets/<id>`.
-3. **GPS** — pick a Thai city preset, choose a movement mode, and set
-   speed / heading.
-4. **Sensors / Signal** — set battery, heart rate, RSSI, SNR.
-5. Click **▶ Start** to begin transmitting on the configured interval, or
-   **⚡ Send Now** for a single immediate uplink.
-
-## ChirpStack QR Code
-
-Click **📱 Generate ChirpStack QR Code** in the Device section to open a
-popup with a QR code in the **LoRa Alliance TR005** schema. Scan it in:
-
-> ChirpStack web UI → Devices → **Add device** → **Scan QR code**
-
-This auto-fills DevEUI and JoinEUI. The AppKey is shown in the popup —
-copy/paste it into ChirpStack manually after scanning (it's not embedded
-in the QR for security).
-
-You can also save the QR as a PNG to print or share.
-
-## Multiple helmets
-
-Run multiple instances (each in its own terminal) with different
-`Helmet ID` values. Each will appear as a separate helmet card in the
-Flutter app.
-
-## Serial Bridge (ESP Receiver)
-
-If you are using a physical Heltec LoRa 32 V2 receiver connected to your PC over USB, you can use the **Serial Bridge** feature to read the incoming LoRa packets from the receiver and forward them directly to the local Express webhook server:
-
-1. Flash the updated `firmware/receiver/receiver.ino` to the receiver board.
-2. Connect the receiver board to your PC via a USB cable.
-3. Open the Simulator App.
-4. Under the **Serial Bridge · ESP Receiver** section:
-   - Click **🔄 Refresh** to scan for connected COM/serial ports.
-   - Choose the correct port for the receiver (e.g., `COM3` on Windows).
-   - Select `115200` baud rate.
-   - Click **▶ Start Bridge**.
-5. Telemetry received by the physical board over LoRa will be printed to Serial as JSON, read by the bridge, and forwarded to the local webhook.
+1. **Configure Webhook** — default is `http://localhost:3000/lora-uplink` with token `smarthelmet`.
+2. **Select Location** — click anywhere on the dark map or click a Thai preset to place the helmet.
+3. **Double Click to Route** — double-click anywhere on the map to drop a red target marker and animate the helmet towards it.
+4. **Tune Sliders** — customize battery, speed, heading, interval, etc.
+5. Click **▶ Start Telemetry** to start the continuous updates.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `main.py` | Entry point |
-| `app.py` | customtkinter UI |
-| `simulator.py` | Headless TX engine (GPS + payload + HTTP) |
-| `serial_bridge.py` | Serial bridge engine to link ESP receiver |
-| `qr_generator.py` | TR005 QR string + PIL image renderer |
-| `requirements.txt` | Python dependencies |
+| `main.py` | Starts local Python HTTP server and opens browser |
+| `index.html` | Front-end Leaflet map UI, simulation engine, and API client |
