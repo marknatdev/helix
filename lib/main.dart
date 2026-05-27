@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 import 'auth/auth_gate.dart';
 import 'auth/auth_service.dart';
@@ -184,6 +185,37 @@ class _CommandCenterPageState extends State<CommandCenterPage> {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: _buildTab(feed, helmets, selectedSafe),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          height: 36,
+          decoration: const BoxDecoration(
+            color: AppColors.sidebar,
+            border: Border(top: BorderSide(color: AppColors.border)),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '© 2026 HELIX. All rights reserved.',
+                style: TextStyle(color: AppColors.mutedFg, fontSize: 11),
+              ),
+              InkWell(
+                onTap: () {
+                  html.window.open('/ppl/', '_blank');
+                },
+                child: const Text(
+                  'Privacy Policy',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ]),
