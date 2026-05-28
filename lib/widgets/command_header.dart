@@ -130,7 +130,7 @@ class CommandHeader extends StatelessWidget {
             const SizedBox(width: 8),
             const LiveClock(),
           ],
-          const SizedBox(width: 4),
+
           IconButton(
             onPressed: onOpenSettings,
             icon: const Icon(Icons.settings_outlined, size: 18),

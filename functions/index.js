@@ -26,8 +26,8 @@ admin.initializeApp({
 const db = admin.firestore();
 
 const app = express();
-// Restrict CORS to localhost only (this is a local server).
-const ALLOWED_ORIGINS = [/localhost/, /127\.0\.0\.1/];
+// Restrict CORS to localhost, 127.0.0.1, and the deployed firebase hosting domains.
+const ALLOWED_ORIGINS = [/localhost/, /127\.0\.0\.1/, /smhelmet-67\.web\.app/, /smhelmet-67\.firebaseapp\.com/];
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || ALLOWED_ORIGINS.some((re) => re.test(origin))) {
@@ -319,6 +319,40 @@ app.post("/lora-uplink", async (req, res) => {
     return res.status(200).json({ ok: true, helmetId, alertCount });
   } catch (err) {
     console.error("[ERR] Firestore write failed:", err);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// ─── Dev config endpoint (secret config page) ───────────────────────────────
+// Updates helmet fields (location, status, battery, etc.) directly.
+
+app.post("/dev-config", async (req, res) => {
+  const token = req.headers["x-webhook-token"] || "";
+  if (!WEBHOOK_SECRET || token !== WEBHOOK_SECRET) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const { helmetId, lat, lng, status, battery, speed, heading, worker, keepAlive } = req.body;
+  if (!helmetId) return res.status(400).json({ error: "Missing helmetId" });
+
+  const now = admin.firestore.FieldValue.serverTimestamp();
+  const update = { updatedAt: now };
+
+  if (lat !== undefined) update.lat = lat;
+  if (lng !== undefined) update.lng = lng;
+  if (status !== undefined) update.status = status;
+  if (battery !== undefined) update.battery = battery;
+  if (speed !== undefined) update.speed = speed;
+  if (heading !== undefined) update.heading = heading;
+  if (worker !== undefined) update.worker = worker;
+  if (keepAlive) update.lastSeen = now;
+
+  try {
+    await db.collection("helmets").doc(helmetId).set(update, { merge: true });
+    console.log(`[DEV] Updated ${helmetId}:`, JSON.stringify(req.body));
+    return res.json({ ok: true, helmetId });
+  } catch (err) {
+    console.error("[DEV] Error:", err.message);
     return res.status(500).json({ error: "Internal error" });
   }
 });

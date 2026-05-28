@@ -6,6 +6,7 @@ import '../services/user_service.dart';
 import '../state/helmet_feed.dart';
 import '../theme/app_theme.dart';
 import 'register_helmet_dialog.dart';
+import '../views/dev_config_page.dart';
 
 class SettingsDialog extends StatelessWidget {
   const SettingsDialog({super.key});
@@ -39,9 +40,18 @@ class SettingsDialog extends StatelessWidget {
                 const Icon(Icons.settings_outlined,
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
-                const Text('Command center settings',
-                    style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w600)),
+                GestureDetector(
+                  onDoubleTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const DevConfigPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Command center settings',
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600)),
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),

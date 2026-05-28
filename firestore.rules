@@ -48,11 +48,12 @@ service cloud.firestore {
            .hasOnly(['acknowledged', 'acknowledgedBy', 'acknowledgedAt']);
     }
 
-    // ─── LoRaWAN helmet telemetry (written by local webhook server) ──────
+    // ─── LoRaWAN helmet telemetry (written by local webhook server or dev config page) ──────
     match /helmets/{helmetId} {
       allow read: if isAuthed()
         && helmetId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.helmetIds;
-      allow write: if false;  // Only admin SDK (local server) writes.
+      allow write: if isAuthed()
+        && helmetId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.helmetIds;
     }
 
     // Top-level alerts collection for device-generated alerts.

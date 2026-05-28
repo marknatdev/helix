@@ -125,7 +125,7 @@ class HelmetList extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       const Text(
-                        'Configure your telemetry feed in Settings (⚙️) or start the simulator to stream live data.',
+                        'Configure your telemetry feed in Settings (⚙️) to stream live data.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 11,

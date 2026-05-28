@@ -14,7 +14,7 @@ class FirestoreHelmetService {
     }
     return _db
         .collection('helmets')
-        .where('helmetId', whereIn: helmetIds)
+        .where(FieldPath.documentId, whereIn: helmetIds)
         .snapshots()
         .map((snap) => snap.docs.map(Helmet.fromFirestore).toList());
   }
