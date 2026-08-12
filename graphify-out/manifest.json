@@ -1,0 +1,827 @@
+{
+  "old-version/android/app/build.gradle.kts": {
+    "mtime": 1777332676.879512,
+    "ast_hash": "26f40febf61b948933be925936acc34f",
+    "semantic_hash": "26f40febf61b948933be925936acc34f"
+  },
+  "old-version/android/app/google-services.json": {
+    "mtime": 1777329344.5786865,
+    "ast_hash": "b6e8a3c32c67dbca946f3a14278f41c2",
+    "semantic_hash": "b6e8a3c32c67dbca946f3a14278f41c2"
+  },
+  "old-version/android/app/src/main/kotlin/com/helix/helix_command_center/MainActivity.kt": {
+    "mtime": 1777329344.6484802,
+    "ast_hash": "f498358544b80033f9c43d9cdc052b46",
+    "semantic_hash": "f498358544b80033f9c43d9cdc052b46"
+  },
+  "old-version/android/build.gradle.kts": {
+    "mtime": 1777332676.879512,
+    "ast_hash": "f11f360aed44d4f6871b398346af14f0",
+    "semantic_hash": "f11f360aed44d4f6871b398346af14f0"
+  },
+  "old-version/android/settings.gradle.kts": {
+    "mtime": 1777332676.879512,
+    "ast_hash": "c473ec2446506d13609a6baf66642536",
+    "semantic_hash": "c473ec2446506d13609a6baf66642536"
+  },
+  "old-version/database.rules.json": {
+    "mtime": 1777329340.5188322,
+    "ast_hash": "a8dec78530cbd4ee9ece4713904434e1",
+    "semantic_hash": "a8dec78530cbd4ee9ece4713904434e1"
+  },
+  "old-version/firebase.json": {
+    "mtime": 1779887256.4302576,
+    "ast_hash": "adf5cba30274ea3fb43929a73c62ab8c",
+    "semantic_hash": "adf5cba30274ea3fb43929a73c62ab8c"
+  },
+  "old-version/firestore.indexes.json": {
+    "mtime": 1779951924.739139,
+    "ast_hash": "40eff685dd55f2c01fadbbe9f25b89d0",
+    "semantic_hash": "40eff685dd55f2c01fadbbe9f25b89d0"
+  },
+  "old-version/firmware/receiver/config.h": {
+    "mtime": 1777565562.91268,
+    "ast_hash": "e8179ed65ba610fef8323ecf83e49c09",
+    "semantic_hash": "e8179ed65ba610fef8323ecf83e49c09"
+  },
+  "old-version/firmware/sender/config.h": {
+    "mtime": 1777564485.6625857,
+    "ast_hash": "9aa99a531e3365768c8af3caab06784f",
+    "semantic_hash": "9aa99a531e3365768c8af3caab06784f"
+  },
+  "old-version/functions/index.js": {
+    "mtime": 1779949632.9554434,
+    "ast_hash": "117edfbab452bc2b7796c5941f4158c3",
+    "semantic_hash": "117edfbab452bc2b7796c5941f4158c3"
+  },
+  "old-version/functions/package.json": {
+    "mtime": 1777292091.3698373,
+    "ast_hash": "4ab7f1ee4d0038b753ad034ef8ba937f",
+    "semantic_hash": "4ab7f1ee4d0038b753ad034ef8ba937f"
+  },
+  "old-version/lib/auth/auth_gate.dart": {
+    "mtime": 1777330552.830118,
+    "ast_hash": "98bdbadd353a8820dec31ba50a5deb99",
+    "semantic_hash": "98bdbadd353a8820dec31ba50a5deb99"
+  },
+  "old-version/lib/auth/auth_service.dart": {
+    "mtime": 1777332115.1769838,
+    "ast_hash": "5e49fc9db3cdcbd2420869f0ad8f245a",
+    "semantic_hash": "5e49fc9db3cdcbd2420869f0ad8f245a"
+  },
+  "old-version/lib/auth/login_page.dart": {
+    "mtime": 1779886667.3622875,
+    "ast_hash": "9d48b5e93203e20668b5bc386aa42b68",
+    "semantic_hash": "9d48b5e93203e20668b5bc386aa42b68"
+  },
+  "old-version/lib/data/helmet_data.dart": {
+    "mtime": 1779885223.6445186,
+    "ast_hash": "3e99c327b45a6b84acd85feb777da09c",
+    "semantic_hash": "3e99c327b45a6b84acd85feb777da09c"
+  },
+  "old-version/lib/main.dart": {
+    "mtime": 1779886118.2228348,
+    "ast_hash": "6dacc46aa9a20e50a366f289a4b4e15f",
+    "semantic_hash": "6dacc46aa9a20e50a366f289a4b4e15f"
+  },
+  "old-version/lib/models/helmet.dart": {
+    "mtime": 1779954588.0648222,
+    "ast_hash": "4007725e99299c3b1a8385112a7cd4d9",
+    "semantic_hash": "4007725e99299c3b1a8385112a7cd4d9"
+  },
+  "old-version/lib/services/firestore_helmet_service.dart": {
+    "mtime": 1779951931.7387333,
+    "ast_hash": "5d093b34fd38fbd57a78874b39c5f2ff",
+    "semantic_hash": "5d093b34fd38fbd57a78874b39c5f2ff"
+  },
+  "old-version/lib/services/user_service.dart": {
+    "mtime": 1777566708.4769533,
+    "ast_hash": "27267eb92bcc78dae9e8dd2bfd881f3c",
+    "semantic_hash": "27267eb92bcc78dae9e8dd2bfd881f3c"
+  },
+  "old-version/lib/state/helmet_feed.dart": {
+    "mtime": 1779883832.7842293,
+    "ast_hash": "141fb85921d2eac3408ff764ec0d5533",
+    "semantic_hash": "141fb85921d2eac3408ff764ec0d5533"
+  },
+  "old-version/lib/theme/app_theme.dart": {
+    "mtime": 1777329344.9666407,
+    "ast_hash": "9aa37b867dd3fc7854b8705b9a984fd1",
+    "semantic_hash": "9aa37b867dd3fc7854b8705b9a984fd1"
+  },
+  "old-version/lib/utils/snackbars.dart": {
+    "mtime": 1777329344.978594,
+    "ast_hash": "ff829c1df53513aba4732aaff52278c0",
+    "semantic_hash": "ff829c1df53513aba4732aaff52278c0"
+  },
+  "old-version/lib/views/dev_config_page.dart": {
+    "mtime": 1779953407.640587,
+    "ast_hash": "3b79f387ffab0f6529e9096376557323",
+    "semantic_hash": "3b79f387ffab0f6529e9096376557323"
+  },
+  "old-version/lib/views/fleet_view.dart": {
+    "mtime": 1777329344.9903097,
+    "ast_hash": "7980eb0aac4f3db8d1f952f13df670bb",
+    "semantic_hash": "7980eb0aac4f3db8d1f952f13df670bb"
+  },
+  "old-version/lib/views/incidents_view.dart": {
+    "mtime": 1777329344.9987304,
+    "ast_hash": "fe1e27515cf764df99c0116979c904cd",
+    "semantic_hash": "fe1e27515cf764df99c0116979c904cd"
+  },
+  "old-version/lib/views/live_view.dart": {
+    "mtime": 1777329345.0117166,
+    "ast_hash": "83a22e6aefb1c5dbf0427fed88991c76",
+    "semantic_hash": "83a22e6aefb1c5dbf0427fed88991c76"
+  },
+  "old-version/lib/views/reports_view.dart": {
+    "mtime": 1777733902.4616323,
+    "ast_hash": "7c2d4e186661d3e98ef4d1230e30237c",
+    "semantic_hash": "7c2d4e186661d3e98ef4d1230e30237c"
+  },
+  "old-version/lib/views/zones_view.dart": {
+    "mtime": 1777329345.0288262,
+    "ast_hash": "01eb55e6fcc9336ccc2ee164dd0937fb",
+    "semantic_hash": "01eb55e6fcc9336ccc2ee164dd0937fb"
+  },
+  "old-version/lib/widgets/alert_feed.dart": {
+    "mtime": 1777329345.038702,
+    "ast_hash": "5c6bb4ecb96e28fc229903c8d3b72ba7",
+    "semantic_hash": "5c6bb4ecb96e28fc229903c8d3b72ba7"
+  },
+  "old-version/lib/widgets/command_header.dart": {
+    "mtime": 1779942854.90984,
+    "ast_hash": "3797aa3ac3bb6156adf17e7b84657e93",
+    "semantic_hash": "3797aa3ac3bb6156adf17e7b84657e93"
+  },
+  "old-version/lib/widgets/fleet_map.dart": {
+    "mtime": 1777733846.9732022,
+    "ast_hash": "3555bb7bc8d8cdbe72daab2bc032865f",
+    "semantic_hash": "3555bb7bc8d8cdbe72daab2bc032865f"
+  },
+  "old-version/lib/widgets/fleet_stats.dart": {
+    "mtime": 1779885231.9984298,
+    "ast_hash": "5d27836ec98f57acba2272feddca0654",
+    "semantic_hash": "5d27836ec98f57acba2272feddca0654"
+  },
+  "old-version/lib/widgets/helmet_detail.dart": {
+    "mtime": 1779885243.6635523,
+    "ast_hash": "a46475858da17e3d771a4a2b25d6cadc",
+    "semantic_hash": "a46475858da17e3d771a4a2b25d6cadc"
+  },
+  "old-version/lib/widgets/helmet_list.dart": {
+    "mtime": 1779942759.196127,
+    "ast_hash": "4002b565deecfa9ddc3a0f22714a4b12",
+    "semantic_hash": "4002b565deecfa9ddc3a0f22714a4b12"
+  },
+  "old-version/lib/widgets/live_clock.dart": {
+    "mtime": 1777332124.9843364,
+    "ast_hash": "175d0e981a8c3bc3973a0081cea0952e",
+    "semantic_hash": "175d0e981a8c3bc3973a0081cea0952e"
+  },
+  "old-version/lib/widgets/register_helmet_dialog.dart": {
+    "mtime": 1779884277.8726258,
+    "ast_hash": "9115f88e25adfb6316135679b3ebdab4",
+    "semantic_hash": "9115f88e25adfb6316135679b3ebdab4"
+  },
+  "old-version/lib/widgets/settings_dialog.dart": {
+    "mtime": 1779949873.2291102,
+    "ast_hash": "11bd0acced7b3aa9a8cb270cc900cda1",
+    "semantic_hash": "11bd0acced7b3aa9a8cb270cc900cda1"
+  },
+  "old-version/remoteconfig.template.json": {
+    "mtime": 1777329340.5976076,
+    "ast_hash": "99914b932bd37a50b983c5e7c90ae93b",
+    "semantic_hash": "99914b932bd37a50b983c5e7c90ae93b"
+  },
+  "old-version/skills-lock.json": {
+    "mtime": 1777329340.6086316,
+    "ast_hash": "dc6c6e06dad1dcec902e06275e0ae17a",
+    "semantic_hash": "dc6c6e06dad1dcec902e06275e0ae17a"
+  },
+  "old-version/test/helmet_model_test.dart": {
+    "mtime": 1779885301.3481982,
+    "ast_hash": "646b8239bc424ecc6c0ca57cdb9fab46",
+    "semantic_hash": "646b8239bc424ecc6c0ca57cdb9fab46"
+  },
+  "old-version/web/manifest.json": {
+    "mtime": 1777329346.0615768,
+    "ast_hash": "58622a445aca0e553c3c52433b3fca70",
+    "semantic_hash": "58622a445aca0e553c3c52433b3fca70"
+  },
+  "old-version/windows/flutter/generated_plugin_registrant.cc": {
+    "mtime": 1777292299.2856996,
+    "ast_hash": "e060f4947bf1f92cd1d0b4816054eddd",
+    "semantic_hash": "e060f4947bf1f92cd1d0b4816054eddd"
+  },
+  "old-version/windows/flutter/generated_plugin_registrant.h": {
+    "mtime": 1777329346.1847582,
+    "ast_hash": "0ea33875f9f8e118f9c2ded03e2e2835",
+    "semantic_hash": "0ea33875f9f8e118f9c2ded03e2e2835"
+  },
+  "old-version/windows/runner/flutter_window.cpp": {
+    "mtime": 1777329346.2484396,
+    "ast_hash": "9b92b95a9eecce25e3e9d356688d0cb6",
+    "semantic_hash": "9b92b95a9eecce25e3e9d356688d0cb6"
+  },
+  "old-version/windows/runner/flutter_window.h": {
+    "mtime": 1777329346.2587695,
+    "ast_hash": "79bea736711adda00c49419a39a4a0b4",
+    "semantic_hash": "79bea736711adda00c49419a39a4a0b4"
+  },
+  "old-version/windows/runner/main.cpp": {
+    "mtime": 1777329346.2685564,
+    "ast_hash": "e27d35686e220b020121b845f023ca52",
+    "semantic_hash": "e27d35686e220b020121b845f023ca52"
+  },
+  "old-version/windows/runner/resource.h": {
+    "mtime": 1777329346.2770567,
+    "ast_hash": "c8f809a4f8d3f2f625e358fd90f72fee",
+    "semantic_hash": "c8f809a4f8d3f2f625e358fd90f72fee"
+  },
+  "old-version/windows/runner/utils.cpp": {
+    "mtime": 1777329346.3041203,
+    "ast_hash": "9b5697b276c8ad67a02ec12ad2c09851",
+    "semantic_hash": "9b5697b276c8ad67a02ec12ad2c09851"
+  },
+  "old-version/windows/runner/utils.h": {
+    "mtime": 1777329346.3124552,
+    "ast_hash": "c741fb9cddbf3a62f4688b6cca39ddcc",
+    "semantic_hash": "c741fb9cddbf3a62f4688b6cca39ddcc"
+  },
+  "old-version/windows/runner/win32_window.cpp": {
+    "mtime": 1777329346.3190413,
+    "ast_hash": "928e86a2be27eca688669dce6c9177d9",
+    "semantic_hash": "928e86a2be27eca688669dce6c9177d9"
+  },
+  "old-version/windows/runner/win32_window.h": {
+    "mtime": 1777329346.3287857,
+    "ast_hash": "5a4cf051798d7e6931ee0405a4523c8f",
+    "semantic_hash": "5a4cf051798d7e6931ee0405a4523c8f"
+  },
+  "package.json": {
+    "mtime": 1786518084.3226733,
+    "ast_hash": "31700fc27e2721c3ee681e8c48fe7b13",
+    "semantic_hash": ""
+  },
+  "src/App.jsx": {
+    "mtime": 1786518107.9431906,
+    "ast_hash": "48cdba264964c279b3e946427aa21e89",
+    "semantic_hash": ""
+  },
+  "src/components/LoginModal.jsx": {
+    "mtime": 1786517526.343087,
+    "ast_hash": "807d5bb77cd4c4ac5be5ce3f2f1e8fd0",
+    "semantic_hash": ""
+  },
+  "src/lib/supabase.js": {
+    "mtime": 1786518014.73807,
+    "ast_hash": "8b922530b13e13dc9a1e5331a04f1ec4",
+    "semantic_hash": ""
+  },
+  "src/main.jsx": {
+    "mtime": 1786514839.2916722,
+    "ast_hash": "5bf7cc7b282029d08afa99125820cbf1",
+    "semantic_hash": "5bf7cc7b282029d08afa99125820cbf1"
+  },
+  "supabase/schema.sql": {
+    "mtime": 1786514806.38976,
+    "ast_hash": "918c5c8028877664e1c83cf87c023ee0",
+    "semantic_hash": "918c5c8028877664e1c83cf87c023ee0"
+  },
+  "vercel.json": {
+    "mtime": 1786514820.4678664,
+    "ast_hash": "6f1ad9c438e29ff307c6585df0c7500b",
+    "semantic_hash": "6f1ad9c438e29ff307c6585df0c7500b"
+  },
+  "vite.config.js": {
+    "mtime": 1786514824.136205,
+    "ast_hash": "b19fe56c29c71a3338f109bbefb1298d",
+    "semantic_hash": "b19fe56c29c71a3338f109bbefb1298d"
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1786517156.7411292,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1786517156.7421336,
+    "ast_hash": "637776aa6f7496d069afe7520c845c8a",
+    "semantic_hash": ""
+  },
+  "AUTH_SETUP.md": {
+    "mtime": 1786516277.2074711,
+    "ast_hash": "2de2d8b4f3eef413eb4df308bc6798c0",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1786514826.223297,
+    "ast_hash": "7bd63531b04d627881e4781ba6acd401",
+    "semantic_hash": ""
+  },
+  "old-version/.github/workflows/ci.yml": {
+    "mtime": 1779884343.9962225,
+    "ast_hash": "c6892d8b115a6626ad53516528d3e0cb",
+    "semantic_hash": ""
+  },
+  "old-version/.github/workflows/firebase-hosting-merge.yml": {
+    "mtime": 1777329342.6087296,
+    "ast_hash": "26e3d061f28b89e153666767ef11abcb",
+    "semantic_hash": ""
+  },
+  "old-version/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1777329342.6288233,
+    "ast_hash": "d2bf9fbd9aa35c3c3a70ce7ddf10d29b",
+    "semantic_hash": ""
+  },
+  "old-version/AUTH_SETUP.md": {
+    "mtime": 1777329340.4827597,
+    "ast_hash": "73118f996e1fd65659f081f4d823123a",
+    "semantic_hash": ""
+  },
+  "old-version/README.md": {
+    "mtime": 1777329340.4905734,
+    "ast_hash": "cc1a8d9afe8e75ad5ed7cec44f7465dc",
+    "semantic_hash": ""
+  },
+  "old-version/analysis_options.yaml": {
+    "mtime": 1777329340.5062697,
+    "ast_hash": "66d03d7647c8e438164feaf5b922d44a",
+    "semantic_hash": ""
+  },
+  "old-version/devtools_options.yaml": {
+    "mtime": 1777329340.5307336,
+    "ast_hash": "d1ff5187b1b67653e7357395895e8449",
+    "semantic_hash": ""
+  },
+  "old-version/firmware/README.md": {
+    "mtime": 1777564674.4261236,
+    "ast_hash": "f67f46ed509ba12f1da069ef9e350769",
+    "semantic_hash": ""
+  },
+  "old-version/public/index.html": {
+    "mtime": 1777329345.1508503,
+    "ast_hash": "b3b3380b0c44850a21c18659055d3c42",
+    "semantic_hash": ""
+  },
+  "old-version/pubspec.yaml": {
+    "mtime": 1779883670.554031,
+    "ast_hash": "d40554ebb858f31c2f9e5d5d1888da45",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/SKILL.md": {
+    "mtime": 1777329345.1788526,
+    "ast_hash": "ebfaf7d812d806c631c44fde9b1ef4f1",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit.md": {
+    "mtime": 1777329345.1965358,
+    "ast_hash": "deaf2e56607e9bc3f8eb32aa6f84af5b",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_anthropic.md": {
+    "mtime": 1777329345.2073307,
+    "ast_hash": "12630eaa5ad87c085351756c1f8938e1",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_chrome.md": {
+    "mtime": 1777329345.2154644,
+    "ast_hash": "a8043be369a7c05b369729ee6dc5ddad",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_firebase_ai.md": {
+    "mtime": 1777329345.2223263,
+    "ast_hash": "189c26ff03ad77b1191d84cfda77a9db",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_google_genai.md": {
+    "mtime": 1777329345.2345026,
+    "ast_hash": "690be0653e609793794ca22fcdc791b0",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_mcp.md": {
+    "mtime": 1777329345.2428186,
+    "ast_hash": "94ff31e1c8571dec350a080fc94eaf2c",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_middleware.md": {
+    "mtime": 1777329345.252785,
+    "ast_hash": "aafbb8d12c4f849f1e1806876aaebe75",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_openai.md": {
+    "mtime": 1777329345.2619798,
+    "ast_hash": "bc5407afcdcb2112143bce011bb24e45",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/genkit_shelf.md": {
+    "mtime": 1777329345.2705085,
+    "ast_hash": "b20a83cc8de2b0657a18a3a68d480c60",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-dart/references/schemantic.md": {
+    "mtime": 1777329345.2785451,
+    "ast_hash": "cfd0520eda8c2b6d0af6b0060f7ecc55",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/SKILL.md": {
+    "mtime": 1777329345.2960324,
+    "ast_hash": "81e9c40e9c15dfd4cdbc873663ecd782",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/flows-and-http.md": {
+    "mtime": 1777329345.3123097,
+    "ast_hash": "b7dede1526f535cf99fb638b17c820e8",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/generation.md": {
+    "mtime": 1777329345.3224566,
+    "ast_hash": "4b7fc8e220157abbe5912faa021d3860",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/getting-started.md": {
+    "mtime": 1777329345.3345084,
+    "ast_hash": "1333864b7cbce4ab8696d44860ac52da",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/prompts.md": {
+    "mtime": 1777329345.3453455,
+    "ast_hash": "65e26a3d263a3e7a12d45b0a4680ff81",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/providers.md": {
+    "mtime": 1777329345.352563,
+    "ast_hash": "94becc597b1f53fded34d38e61679a6c",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-go/references/tools.md": {
+    "mtime": 1777329345.3650274,
+    "ast_hash": "aac61ff499acfd348f693240ce641231",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/SKILL.md": {
+    "mtime": 1777329345.378388,
+    "ast_hash": "64329f401eb0ba58fc736ffd6a67320f",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/references/best-practices.md": {
+    "mtime": 1777329345.3984728,
+    "ast_hash": "392b2e0f2ef112015f5b4300ee3f4ae9",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/references/common-errors.md": {
+    "mtime": 1777329345.4085436,
+    "ast_hash": "fe379498c5d4a8a1b055bfa5ebc547fd",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/references/docs-and-cli.md": {
+    "mtime": 1777329345.4185543,
+    "ast_hash": "ab846bfdd85cacb342d1b0169d483865",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/references/examples.md": {
+    "mtime": 1777329345.4286788,
+    "ast_hash": "092da105d98d8a5c6c05ff56398d3982",
+    "semantic_hash": ""
+  },
+  "old-version/skills/developing-genkit-js/references/setup.md": {
+    "mtime": 1777329345.438665,
+    "ast_hash": "7c38adc407e824a8c89319823e5e746a",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-ai-logic/SKILL.md": {
+    "mtime": 1777329345.4507184,
+    "ast_hash": "74b2bc1d7d79015f64e1a287f81a72f6",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-ai-logic/references/usage_patterns_web.md": {
+    "mtime": 1777329345.4616983,
+    "ast_hash": "f2c0b2fafdb245d1b4080d1e35f1bc6a",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-app-hosting-basics/SKILL.md": {
+    "mtime": 1777329345.4745054,
+    "ast_hash": "50f1149b54724ca251f74f61eb380abf",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-app-hosting-basics/references/cli_commands.md": {
+    "mtime": 1777329345.4854076,
+    "ast_hash": "0403657158d488bf24cbd63f32621109",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-app-hosting-basics/references/configuration.md": {
+    "mtime": 1777329345.495472,
+    "ast_hash": "3d07374b336c68b918856aabd47c4259",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-app-hosting-basics/references/emulation.md": {
+    "mtime": 1777329345.5025947,
+    "ast_hash": "b260bc0b9d5ae868ca316edfb61f2cf0",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-auth-basics/SKILL.md": {
+    "mtime": 1777329345.5221684,
+    "ast_hash": "cc98edf7a721e34e37ea73d5f58ac391",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-auth-basics/references/client_sdk_web.md": {
+    "mtime": 1777329345.5356455,
+    "ast_hash": "f31721854ba740d8ce04d550e1af8b4f",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-auth-basics/references/security_rules.md": {
+    "mtime": 1777329345.543445,
+    "ast_hash": "825de231c117fdc362581e8738283310",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/SKILL.md": {
+    "mtime": 1777329345.5588346,
+    "ast_hash": "2ca45b0760c937907863eef0c9d57e41",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/firebase-cli-guide.md": {
+    "mtime": 1777329345.5746558,
+    "ast_hash": "cdb71fc2ab3e166bcd5374b0b284eb4d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/firebase-service-init.md": {
+    "mtime": 1777329345.584824,
+    "ast_hash": "963e169bd9e79b5b3ec7e520d696a67c",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/local-env-setup.md": {
+    "mtime": 1777329345.5984974,
+    "ast_hash": "65cd6a5bc411a2efd12d184d8e22228e",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/refresh/antigravity.md": {
+    "mtime": 1777329345.6187048,
+    "ast_hash": "6cd3121a97824ef97331f200a1f46c1c",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/refresh/claude.md": {
+    "mtime": 1777329345.6222029,
+    "ast_hash": "823dcb8fc4e9c3be0821ab3a3008fb68",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/refresh/gemini-cli.md": {
+    "mtime": 1777329345.6356652,
+    "ast_hash": "cd2e2a90b206fd2aedda7700d6568b7e",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/refresh/other-agents.md": {
+    "mtime": 1777329345.6426342,
+    "ast_hash": "24706a04fd79d32044cc8fe8b2fb524b",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/antigravity.md": {
+    "mtime": 1777329345.6585715,
+    "ast_hash": "ea827b3380b1d70088c480bd2920b169",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/claude_code.md": {
+    "mtime": 1777329345.6684,
+    "ast_hash": "ecf90f4beb94b2ed277fd553fb488d7d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/cursor.md": {
+    "mtime": 1777329345.6786876,
+    "ast_hash": "887433a0a4b2eedf3f5f6113a695bcfe",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/gemini_cli.md": {
+    "mtime": 1777329345.6860561,
+    "ast_hash": "67e034ce5c454ec4773e7af43c579f2b",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/github_copilot.md": {
+    "mtime": 1777329345.6887543,
+    "ast_hash": "0ab1a0d4d0b3ea929fe4830afaf83bd8",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/setup/other_agents.md": {
+    "mtime": 1777329345.7040935,
+    "ast_hash": "e40942687ca209227a04735b7e67dd88",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-basics/references/web_setup.md": {
+    "mtime": 1777329345.6063666,
+    "ast_hash": "0e6f6485bb44054212983103e60eb977",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/SKILL.md": {
+    "mtime": 1777329345.7186334,
+    "ast_hash": "d725a78cd576cf704372b863e0d33829",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/examples.md": {
+    "mtime": 1777329345.7287004,
+    "ast_hash": "c5faff359efc115c363491d755aed4d8",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/advanced.md": {
+    "mtime": 1777329345.7561407,
+    "ast_hash": "24fe4678fb0f86d89dea91717708e81f",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/config.md": {
+    "mtime": 1777329345.7652922,
+    "ast_hash": "3ac7e1ffd7bbd84ab4f27eda76d2d26a",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/native_sql.md": {
+    "mtime": 1777329345.7686381,
+    "ast_hash": "4a61197735eafa50c47481d02ad7cfa7",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/operations.md": {
+    "mtime": 1777329345.7828882,
+    "ast_hash": "9f1d49a1dca75decd0779ab9b0f937a8",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/schema.md": {
+    "mtime": 1777329345.7955399,
+    "ast_hash": "4a2b27b00d6093bad0ca2d757fc5a1d3",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/sdks.md": {
+    "mtime": 1777329345.8078265,
+    "ast_hash": "7edb114b8ff9d8af455e113ca9dc7e6d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/reference/security.md": {
+    "mtime": 1777329345.8207185,
+    "ast_hash": "603f276cd9e8336aac22e31a833e671b",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-data-connect/templates.md": {
+    "mtime": 1777329345.7386806,
+    "ast_hash": "9b84da67c76c8a3ba2e85b7cb4e937c1",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/SKILL.md": {
+    "mtime": 1777329345.8386116,
+    "ast_hash": "a385c3ec4f8e62be9e6070296472e2a2",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/data_model.md": {
+    "mtime": 1777329345.8554306,
+    "ast_hash": "8a3a35044dcfdfb105125cee732936b0",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/indexes.md": {
+    "mtime": 1777329345.8670223,
+    "ast_hash": "ef83b8f336311d33240d8a2fcf5a4069",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/provisioning.md": {
+    "mtime": 1777329345.877299,
+    "ast_hash": "1b8cf19e2eb043fdf091dd69a379e4bf",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/python_sdk_usage.md": {
+    "mtime": 1777329345.8788128,
+    "ast_hash": "38e46e23155c4b5d41a2d18714df2d5d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/security_rules.md": {
+    "mtime": 1777329345.8985121,
+    "ast_hash": "2252c5c669eba024bd9b86777ba7f26d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-enterprise-native-mode/references/web_sdk_usage.md": {
+    "mtime": 1777329345.908852,
+    "ast_hash": "ada015e12d16d938b1cc00c3e489f185",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-standard/SKILL.md": {
+    "mtime": 1777329345.9255743,
+    "ast_hash": "ae02b05be09d28d74a72730898a3eaf7",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-standard/references/indexes.md": {
+    "mtime": 1777329345.9386053,
+    "ast_hash": "d16a84be8ece7528b44325942aa0167f",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-standard/references/provisioning.md": {
+    "mtime": 1777329345.9485216,
+    "ast_hash": "d841b670e3bc4514fc66b1a5ad78b9e7",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-standard/references/security_rules.md": {
+    "mtime": 1777329345.958859,
+    "ast_hash": "2252c5c669eba024bd9b86777ba7f26d",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-firestore-standard/references/web_sdk_usage.md": {
+    "mtime": 1777329345.9696271,
+    "ast_hash": "47b48a8a6168c307766ccf433ee4d70f",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-hosting-basics/SKILL.md": {
+    "mtime": 1777329345.988411,
+    "ast_hash": "d68eccf43abd95ffc97ef8dfac7bbe33",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-hosting-basics/references/configuration.md": {
+    "mtime": 1777329346.0021956,
+    "ast_hash": "f02657bc397346896bab1cb0ec61edec",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firebase-hosting-basics/references/deploying.md": {
+    "mtime": 1777329346.0116558,
+    "ast_hash": "c729a6ecfed24994501fecb9e2d65f73",
+    "semantic_hash": ""
+  },
+  "old-version/skills/firestore-security-rules-auditor/SKILL.md": {
+    "mtime": 1777329346.028429,
+    "ast_hash": "e5143fa6159dd9bb3a2bb070f511a819",
+    "semantic_hash": ""
+  },
+  "old-version/web/index.html": {
+    "mtime": 1779887264.7384236,
+    "ast_hash": "c8b7d93250fd3de714d04dbc6fe87c84",
+    "semantic_hash": ""
+  },
+  "old-version/web/ppl/index.html": {
+    "mtime": 1779885763.8697824,
+    "ast_hash": "53aa25d3d974dd7fb100cdf1d28d867b",
+    "semantic_hash": ""
+  },
+  "old-version/windows/CMakeLists.txt": {
+    "mtime": 1777329346.128816,
+    "ast_hash": "adfb19aac38926f8b78a3f1d51c12cae",
+    "semantic_hash": ""
+  },
+  "old-version/windows/flutter/CMakeLists.txt": {
+    "mtime": 1777329346.1594694,
+    "ast_hash": "0c500410e3259a9a053797dc1c28070e",
+    "semantic_hash": ""
+  },
+  "old-version/windows/runner/CMakeLists.txt": {
+    "mtime": 1777329346.2283952,
+    "ast_hash": "e99a99b5cc82a168fc557eb23b8d5a96",
+    "semantic_hash": ""
+  },
+  "old-version/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
+    "mtime": 1777329344.7062237,
+    "ast_hash": "13e9c72ec37fac220397aa819fa1ef2d",
+    "semantic_hash": ""
+  },
+  "old-version/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
+    "mtime": 1777329344.721994,
+    "ast_hash": "6270344430679711b81476e29878caa7",
+    "semantic_hash": ""
+  },
+  "old-version/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
+    "mtime": 1777329344.7386837,
+    "ast_hash": "a0a8db5985280b3679d99a820ae2db79",
+    "semantic_hash": ""
+  },
+  "old-version/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
+    "mtime": 1777329344.7644749,
+    "ast_hash": "afe1b655b9f32da22f9a4301bb8e6ba8",
+    "semantic_hash": ""
+  },
+  "old-version/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
+    "mtime": 1777329344.790199,
+    "ast_hash": "57838d52c318faff743130c3fcfae0c6",
+    "semantic_hash": ""
+  },
+  "old-version/web/favicon.png": {
+    "mtime": 1777329346.0386302,
+    "ast_hash": "5dcef449791fa27946b3d35ad8803796",
+    "semantic_hash": ""
+  },
+  "old-version/web/icons/Icon-192.png": {
+    "mtime": 1777329346.0765674,
+    "ast_hash": "ac9a721a12bbc803b44f645561ecb1e1",
+    "semantic_hash": ""
+  },
+  "old-version/web/icons/Icon-512.png": {
+    "mtime": 1777329346.0885704,
+    "ast_hash": "96e752610906ba2a93c65f8abe1645f1",
+    "semantic_hash": ""
+  },
+  "old-version/web/icons/Icon-maskable-192.png": {
+    "mtime": 1777329346.0963295,
+    "ast_hash": "c457ef57daa1d16f64b27b786ec2ea3c",
+    "semantic_hash": ""
+  },
+  "old-version/web/icons/Icon-maskable-512.png": {
+    "mtime": 1777329346.1053927,
+    "ast_hash": "301a7604d45b3e739efc881eb04896ea",
+    "semantic_hash": ""
+  },
+  "src/components/SupervisorDevModal.jsx": {
+    "mtime": 1786517516.8472629,
+    "ast_hash": "526af746b0a88446959f7c3b1f72b26c",
+    "semantic_hash": ""
+  },
+  "src/components/OpenStreetMap.jsx": {
+    "mtime": 1786518096.408528,
+    "ast_hash": "17f01d8ec93adbeccbbe0d667a6ea412",
+    "semantic_hash": ""
+  }
+}
