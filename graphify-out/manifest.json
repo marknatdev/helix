@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1786518107.9431906,
-    "ast_hash": "48cdba264964c279b3e946427aa21e89",
+    "mtime": 1786519912.4192028,
+    "ast_hash": "f9b64b2d88eae10456551f1b0d540bcc",
     "semantic_hash": ""
   },
   "src/components/LoginModal.jsx": {
@@ -275,19 +275,19 @@
     "semantic_hash": ""
   },
   "src/lib/supabase.js": {
-    "mtime": 1786518014.73807,
-    "ast_hash": "8b922530b13e13dc9a1e5331a04f1ec4",
+    "mtime": 1786519933.8043282,
+    "ast_hash": "75e08d026d1f8282d9dde17461cc4efb",
     "semantic_hash": ""
   },
   "src/main.jsx": {
-    "mtime": 1786514839.2916722,
-    "ast_hash": "5bf7cc7b282029d08afa99125820cbf1",
-    "semantic_hash": "5bf7cc7b282029d08afa99125820cbf1"
+    "mtime": 1786520189.3095772,
+    "ast_hash": "609683bb2e64e6596c82b47372836d6f",
+    "semantic_hash": ""
   },
   "supabase/schema.sql": {
-    "mtime": 1786514806.38976,
-    "ast_hash": "918c5c8028877664e1c83cf87c023ee0",
-    "semantic_hash": "918c5c8028877664e1c83cf87c023ee0"
+    "mtime": 1786519645.027091,
+    "ast_hash": "8b83fd97c2b3197ed79dc1948c5570f6",
+    "semantic_hash": ""
   },
   "vercel.json": {
     "mtime": 1786514820.4678664,
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786514826.223297,
-    "ast_hash": "7bd63531b04d627881e4781ba6acd401",
+    "mtime": 1786520184.930296,
+    "ast_hash": "401dd06b6a92e9500d729717d0a7fdd0",
     "semantic_hash": ""
   },
   "old-version/.github/workflows/ci.yml": {
@@ -815,13 +815,58 @@
     "semantic_hash": ""
   },
   "src/components/SupervisorDevModal.jsx": {
-    "mtime": 1786517516.8472629,
-    "ast_hash": "526af746b0a88446959f7c3b1f72b26c",
+    "mtime": 1786520135.6932685,
+    "ast_hash": "e8fb79ee3a54c15049b3562edf222594",
     "semantic_hash": ""
   },
   "src/components/OpenStreetMap.jsx": {
-    "mtime": 1786518096.408528,
-    "ast_hash": "17f01d8ec93adbeccbbe0d667a6ea412",
+    "mtime": 1786520000.2305076,
+    "ast_hash": "24814115f62e3b8ddfa650597f5798ba",
+    "semantic_hash": ""
+  },
+  "public/manifest.json": {
+    "mtime": 1786520177.8720815,
+    "ast_hash": "52f36db492855c26511944932f42b7fa",
+    "semantic_hash": ""
+  },
+  "public/sw.js": {
+    "mtime": 1786520182.9763012,
+    "ast_hash": "79dc74887499c5692c79c5f7dcd088bf",
+    "semantic_hash": ""
+  },
+  "src/lib/roles.js": {
+    "mtime": 1786519677.8708212,
+    "ast_hash": "d9b932b4831a8ef215646680df27140b",
+    "semantic_hash": ""
+  },
+  "src/lib/serviceWorker.js": {
+    "mtime": 1786520180.3250015,
+    "ast_hash": "7c313c2ced7dac08ca7dd307346a37fe",
+    "semantic_hash": ""
+  },
+  "supabase/functions/archive-telemetry/index.ts": {
+    "mtime": 1786520173.5643604,
+    "ast_hash": "bfcfbef6edbbe691a2a1e19115434756",
+    "semantic_hash": ""
+  },
+  "supabase/functions/geofence-check/index.ts": {
+    "mtime": 1786520170.29926,
+    "ast_hash": "d78853a1916228e58ba30ae281061f41",
+    "semantic_hash": ""
+  },
+  "supabase/functions/process-incident/index.ts": {
+    "mtime": 1786520166.3999922,
+    "ast_hash": "750c3c1b2589c8d81041bfbb62575a70",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy.yml": {
+    "mtime": 1786520191.5680437,
+    "ast_hash": "a05149b3523b8153b44c95660c69ac51",
+    "semantic_hash": ""
+  },
+  ".github/workflows/firmware-ci.yml": {
+    "mtime": 1786520193.571899,
+    "ast_hash": "2ef770f80c8dbfac16721ae5b71b9ea1",
     "semantic_hash": ""
   }
 }

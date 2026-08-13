@@ -1,11 +1,11 @@
 # Graph Report - helix  (2026-08-12)
 
 ## Corpus Check
-- 141 files · ~69,140 words
+- 142 files · ~70,141 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1401 nodes · 1657 edges · 117 communities (111 shown, 6 thin omitted)
+- 1405 nodes · 1662 edges · 119 communities (113 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -121,9 +121,11 @@
 - Genkit Anthropic Plugin (`genkit_anthropic`)
 - Genkit Shelf Plugin (`genkit_shelf`)
 - DefineStreamingFlow
+- Relationships
 - helix_command_center
 - rules/graphify.md
 - workflows/graphify.md
+- Development Workflow
 
 ## God Nodes (most connected - your core abstractions)
 1. `Win32Window` - 22 edges
@@ -138,29 +140,29 @@
 10. `WndProc` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `wWinMain()` --calls--> `CreateAndAttachConsole()`  [INFERRED]
-  old-version/windows/runner/main.cpp → old-version/windows/runner/utils.cpp
-- `Win32Window::Win32Window()` --calls--> `Destroy`  [INFERRED]
-  old-version/windows/runner/win32_window.cpp → old-version/windows/runner/win32_window.h
-- `_LoginPageState` --references--> `AuthService`  [EXTRACTED]
-  old-version/lib/auth/login_page.dart → old-version/lib/auth/auth_service.dart
 - `_submit` --references--> `AuthService`  [EXTRACTED]
   old-version/lib/auth/login_page.dart → old-version/lib/auth/auth_service.dart
-- `_CommandCenterPageState` --references--> `AuthService`  [EXTRACTED]
-  old-version/lib/main.dart → old-version/lib/auth/auth_service.dart
+- `_loadHelmets` --references--> `UserService`  [EXTRACTED]
+  old-version/lib/views/dev_config_page.dart → old-version/lib/services/user_service.dart
+- `_register` --references--> `UserService`  [EXTRACTED]
+  old-version/lib/widgets/register_helmet_dialog.dart → old-version/lib/services/user_service.dart
+- `_unregister` --references--> `UserService`  [EXTRACTED]
+  old-version/lib/widgets/register_helmet_dialog.dart → old-version/lib/services/user_service.dart
+- `wWinMain()` --calls--> `CreateAndAttachConsole()`  [INFERRED]
+  old-version/windows/runner/main.cpp → old-version/windows/runner/utils.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (117 total, 6 thin omitted)
+## Communities (119 total, 6 thin omitted)
 
 ### Community 0 - "Win32Window"
 Cohesion: 0.06
 Nodes (54): FlutterViewController, RegisterPlugins(), DartProject, HWND, LPARAM, LRESULT, UINT, WPARAM (+46 more)
 
 ### Community 1 - "dev_config_page.dart"
-Cohesion: 0.05
-Nodes (44): dart:async, dart:convert, dart:math, _batteryCtrl, build, _buildEditor, createState, _db (+36 more)
+Cohesion: 0.06
+Nodes (33): dart:convert, dart:math, _batteryCtrl, build, _buildEditor, createState, _db, dispose (+25 more)
 
 ### Community 2 - "helmet.dart"
 Cohesion: 0.05
@@ -172,15 +174,15 @@ Nodes (32): ../data/helmet_data.dart, EdgeInsetsGeometry, MapController, build, 
 
 ### Community 4 - "package.json"
 Cohesion: 0.07
-Nodes (27): lucide-react, dependencies, lucide-react, react, react-dom, @supabase/supabase-js, devDependencies, @types/react (+19 more)
+Nodes (29): leaflet, lucide-react, dependencies, leaflet, lucide-react, react, react-dom, @supabase/supabase-js (+21 more)
 
 ### Community 5 - "command_header.dart"
 Cohesion: 0.09
 Nodes (23): AnimationController?, live_clock.dart, _ac, active, activeTab, build, children, count (+15 more)
 
 ### Community 6 - "login_page.dart"
-Cohesion: 0.13
-Nodes (14): dart:html, FormState, build, _busy, createState, _decoration, dispose, _email (+6 more)
+Cohesion: 0.12
+Nodes (15): dart:html, FormState, build, _busy, createState, _decoration, dispose, _email (+7 more)
 
 ### Community 7 - "app_theme.dart"
 Cohesion: 0.10
@@ -196,7 +198,7 @@ Nodes (17): cors, dotenv, express, firebase-admin, dependencies, cors, dotenv, e
 
 ### Community 10 - "StatelessWidget"
 Cohesion: 0.07
-Nodes (31): HelmetStatus, _Label, _SecretBadge, _Badge, CommandHeader, _NavItem, _HudIconBtn, _HudPill (+23 more)
+Nodes (30): HelmetStatus, _Label, _Badge, CommandHeader, _NavItem, _HudIconBtn, _HudPill, _LegendDot (+22 more)
 
 ### Community 11 - "settings_dialog.dart"
 Cohesion: 0.13
@@ -207,8 +209,8 @@ Cohesion: 0.13
 Nodes (14): Color?, _ActionButton, build, color, helmet, HelmetDetail, icon, label (+6 more)
 
 ### Community 13 - "helmet_model_test.dart"
-Cohesion: 0.13
-Nodes (14): DocumentReference, DocumentSnapshot, Map, _data, exists, FakeDocumentSnapshot, _id, main (+6 more)
+Cohesion: 0.12
+Nodes (15): bool get, DocumentReference, DocumentSnapshot, Map, _data, exists, FakeDocumentSnapshot, _id (+7 more)
 
 ### Community 14 - "alert_feed.dart"
 Cohesion: 0.14
@@ -223,8 +225,8 @@ Cohesion: 0.14
 Nodes (13): FirebaseAuth, _auth, _authSub, dispose, isSignedIn, messageFor, signIn, signOut (+5 more)
 
 ### Community 17 - "user_service.dart"
-Cohesion: 0.15
-Nodes (12): bool get, clear, _db, dispose, _helmetIds, listen, _loaded, registerHelmet (+4 more)
+Cohesion: 0.17
+Nodes (11): clear, _db, dispose, _helmetIds, listen, _loaded, registerHelmet, _sub (+3 more)
 
 ### Community 18 - "index.js"
 Cohesion: 0.15
@@ -255,24 +257,24 @@ Cohesion: 0.17
 Nodes (11): alerts, build, child, helmets, _InlineStat, label, _ReportCard, ReportsView (+3 more)
 
 ### Community 25 - "register_helmet_dialog.dart"
-Cohesion: 0.20
-Nodes (10): build, _busy, _controller, createState, dispose, _error, RegisterHelmetDialog, _RegisterHelmetDialogState (+2 more)
+Cohesion: 0.17
+Nodes (12): build, _busy, _controller, createState, dispose, _error, _register, RegisterHelmetDialog (+4 more)
 
 ### Community 26 - "State"
-Cohesion: 0.27
-Nodes (10): LoginPage, _LoginPageState, CommandCenterPage, _CommandCenterPageState, _UserHelmetBridge, _UserHelmetBridgeState, DevConfigPage, _DevConfigPageState (+2 more)
+Cohesion: 0.29
+Nodes (7): LoginPage, CommandCenterPage, _UserHelmetBridge, DevConfigPage, LiveClock, _LiveClockState, StatefulWidget
 
 ### Community 27 - "manifest.json"
 Cohesion: 0.18
 Nodes (10): background_color, description, display, icons, name, orientation, prefer_related_applications, short_name (+2 more)
 
 ### Community 28 - "App.jsx"
-Cohesion: 0.37
-Nodes (9): App(), LoginModal(), SupervisorDevModal(), fetchLiveHelmetsFromSupabase(), fetchLiveIncidentsFromSupabase(), initialIncidents, initialWorkers, isSupabaseConfigured() (+1 more)
+Cohesion: 0.31
+Nodes (10): App(), LoginModal(), OpenStreetMap(), SupervisorDevModal(), fetchLiveHelmetsFromSupabase(), fetchLiveIncidentsFromSupabase(), initialIncidents, initialWorkers (+2 more)
 
 ### Community 29 - "UserService"
-Cohesion: 0.24
-Nodes (13): ChangeNotifier, MaterialPageRoute, AuthService, _submit, build, _openSettings, UserService, HelmetFeed (+5 more)
+Cohesion: 0.29
+Nodes (14): ChangeNotifier, MaterialPageRoute, AuthService, _LoginPageState, build, _CommandCenterPageState, _openSettings, _UserHelmetBridgeState (+6 more)
 
 ### Community 30 - "firestore_helmet_service.dart"
 Cohesion: 0.22
@@ -303,8 +305,8 @@ Cohesion: 0.08
 Nodes (23): `cleanUrls` (Optional), Full Example, `headers` (Optional), Hosting Configuration (`firebase.json`), `ignore` (Optional), Key Attributes, `public` (Required), `redirects` (Optional) (+15 more)
 
 ### Community 45 - "Configuration Reference"
-Cohesion: 0.14
-Nodes (14): Cloud SQL Configuration, Configuration Reference, Connect from SDK, connector.yaml, Contents, dataconnect.yaml, Emulator, Emulator Configuration (firebase.json) (+6 more)
+Cohesion: 0.08
+Nodes (24): Breaking Changes, CI/CD Integration, Cloud SQL Configuration, Configuration Reference, Connect from SDK, connector.yaml, Contents, dataconnect.yaml (+16 more)
 
 ### Community 46 - "Security Reference"
 Cohesion: 0.08
@@ -319,8 +321,8 @@ Cohesion: 0.17
 Nodes (11): Blog with Permissions, E-Commerce Store, Examples, Movie Review App, Mutations, Operations, Operations with Role Checks, Queries (+3 more)
 
 ### Community 49 - ".prompt Files (Dotprompt)"
-Cohesion: 0.14
-Nodes (13): Basic .prompt File, DefineDataPrompt (Typed Input/Output), DefineSchema (manual JSON Schema), DefineSchemaFor (from Go type), Execute (typed), ExecuteStream (typed), Load and Use, LoadPrompt (Explicit Path) (+5 more)
+Cohesion: 0.17
+Nodes (11): DefineDataPrompt (Typed Input/Output), DefinePrompt, DefineSchema (manual JSON Schema), DefineSchemaFor (from Go type), Execute, Execute (typed), ExecuteStream, ExecuteStream (typed) (+3 more)
 
 ### Community 50 - "Web SDK Usage"
 Cohesion: 0.11
@@ -339,8 +341,8 @@ Cohesion: 0.15
 Nodes (12): Architecture, Arduino IDE Setup (both boards), Configuration, GPS Wiring (when ready), Hardware, HELIX Firmware — LoRa Point-to-Point, Heltec V2 Pinout, LoRa Settings (must match on both boards) (+4 more)
 
 ### Community 54 - "Schema Reference"
-Cohesion: 0.10
-Nodes (20): @col, Contents, Core Directives, Customizing Tables, Data Types, @default, Defining Types, Enumerations (+12 more)
+Cohesion: 0.25
+Nodes (8): Contents, Customizing Tables, Data Types, Defining Types, Enumerations, Schema Reference, User Table with Auth, Views (Advanced)
 
 ### Community 55 - "Genkit Core Framework"
 Cohesion: 0.17
@@ -351,8 +353,8 @@ Cohesion: 0.17
 Nodes (11): Firestore Web SDK Usage Guide, Get a Single Document (`getDoc`), Get Multiple Documents (`getDocs`), Handle Changes (Added/Modified/Removed), Initialization, Listen to a Document/Query (`onSnapshot`), Order and Limit, Queries (+3 more)
 
 ### Community 57 - "HTTP Handlers"
-Cohesion: 0.33
-Nodes (6): Context Providers, genkit.Handler, genkit.HandlerFunc, HTTP Handlers, ListFlows, Request/Response Format
+Cohesion: 0.17
+Nodes (11): dart:async, build, createState, dispose, _fmt, initState, _now, _timer (+3 more)
 
 ### Community 58 - "Getting Started"
 Cohesion: 0.18
@@ -379,8 +381,8 @@ Cohesion: 0.22
 Nodes (4): Genkit Chrome AI Plugin (`genkit_chrome`), Usage, Genkit Firebase AI Plugin (`genkit_firebase_ai`), Usage
 
 ### Community 64 - "Generation"
-Cohesion: 0.13
-Nodes (15): By Format String, By Go Type, Callback-Based Streaming, Combining Format + Schema, Common Options, Custom Output Instructions, Enum Output, Generate (+7 more)
+Cohesion: 0.22
+Nodes (9): Callback-Based Streaming, Common Options, Generate, GenerateData (Structured Output), GenerateDataStream (Structured Streaming), GenerateStream, GenerateText, Generation (+1 more)
 
 ### Community 65 - "Genkit Best Practices"
 Cohesion: 0.22
@@ -391,12 +393,12 @@ Cohesion: 0.22
 Nodes (9): CLI Usage, Critical: Do Not Trust Internal Knowledge, Development Workflow, Error Troubleshooting Protocol, Finding Documentation, Genkit JS, Hello World, Prerequisites (+1 more)
 
 ### Community 67 - "Native SQL Operations"
-Cohesion: 0.17
+Cohesion: 0.25
 Nodes (8): Core Agent Constraints, Mutation Fields (DML), Native SQL Operations, Native SQL Root Fields, PostgreSQL Extensions, Query Fields (Read-Only), ⚠️ Security: Stored Procedures & Dynamic SQL, Syntax rules & limitations
 
 ### Community 68 - "firebase-data-connect/SKILL.md"
-Cohesion: 0.18
-Nodes (11): 1. Define Data Model (`schema/schema.gql`), 2. Define Operations (`connector/queries.gql`, `connector/mutations.gql`), 3. Secure Your App (`connector/` files), 4. Generate & Use SDKs, Deployment & CLI, Development Workflow, Examples, Feature Capability Map (+3 more)
+Cohesion: 0.22
+Nodes (6): Deployment & CLI, Examples, Feature Capability Map, Firebase Data Connect, Operation Strategies: GraphQL vs. Native SQL, Project Structure
 
 ### Community 69 - "Operations Reference"
 Cohesion: 0.08
@@ -435,8 +437,8 @@ Cohesion: 0.25
 Nodes (7): 1. Configure and Verify Firebase MCP Server, 1. Install and Verify Firebase Extension, 2. Restart and Verify Connection, 2. Restart and Verify Connection, Alternative: Manual MCP Configuration (Project Scope), Gemini CLI Setup, Recommended: Installing Extensions
 
 ### Community 78 - "Queries"
-Cohesion: 0.50
-Nodes (4): DefinePrompt, Execute, ExecuteStream, Override Options at Execution
+Cohesion: 0.29
+Nodes (7): @col, Core Directives, @default, @index, @searchable, @table, @unique
 
 ### Community 79 - "Native SQL Examples"
 Cohesion: 0.25
@@ -463,8 +465,8 @@ Cohesion: 0.29
 Nodes (7): Anthropic (Claude), Google AI (Gemini), Model Providers, Multiple Providers, Ollama (Local Models), OpenAI-Compatible (compat_oai), Vertex AI
 
 ### Community 86 - "Deployment"
-Cohesion: 0.40
-Nodes (5): Breaking Changes, CI/CD Integration, Deploy Workflow, Deployment, Schema Migrations
+Cohesion: 0.33
+Nodes (6): By Format String, By Go Type, Combining Format + Schema, Custom Output Instructions, Enum Output, Output Formats
 
 ### Community 87 - "Manual Initialization"
 Cohesion: 0.29
@@ -483,8 +485,8 @@ Cohesion: 0.33
 Nodes (6): Best Practices, Core Features and Usage, External Dependencies, Genkit CLI (recommended), Genkit Dart, Plugin Ecosystem
 
 ### Community 91 - "Firebase CLI Commands"
-Cohesion: 0.40
-Nodes (5): Deployment, Firebase CLI Commands, Initialize Data Connect, Local Development, Schema Management
+Cohesion: 0.33
+Nodes (6): Basic .prompt File, Load and Use, LoadPrompt (Explicit Path), .prompt File Features, .prompt Files (Dotprompt), Typed .prompt File
 
 ### Community 92 - "Genkit Documentation & CLI"
 Cohesion: 0.33
@@ -563,28 +565,36 @@ Cohesion: 0.50
 Nodes (3): Existing Shelf Application, Genkit Shelf Plugin (`genkit_shelf`), Standalone Server
 
 ### Community 111 - "DefineStreamingFlow"
-Cohesion: 0.22
-Nodes (8): DefineFlow, DefineStreamingFlow, Flows & HTTP, Named Sub-Steps, Pattern 1: Passthrough Streaming, Pattern 2: Manual String Streaming, Running a Flow Directly, Typed Streaming Flows
+Cohesion: 0.13
+Nodes (14): Context Providers, DefineFlow, DefineStreamingFlow, Flows & HTTP, genkit.Handler, genkit.HandlerFunc, HTTP Handlers, ListFlows (+6 more)
+
+### Community 113 - "Relationships"
+Cohesion: 0.40
+Nodes (5): Many-to-Many, One-to-Many (Implicit Foreign Key), One-to-One, @ref Directive, Relationships
+
+### Community 118 - "Development Workflow"
+Cohesion: 0.40
+Nodes (5): 1. Define Data Model (`schema/schema.gql`), 2. Define Operations (`connector/queries.gql`, `connector/mutations.gql`), 3. Secure Your App (`connector/` files), 4. Generate & Use SDKs, Development Workflow
 
 ## Knowledge Gaps
-- **860 isolated node(s):** `admin`, `express`, `cors`, `path`, `db` (+855 more)
+- **861 isolated node(s):** `admin`, `express`, `cors`, `path`, `db` (+856 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthService` connect `UserService` to `login_page.dart`, `main.dart`, `settings_dialog.dart`, `auth_service.dart`, `State`?**
+- **Why does `AuthService` connect `UserService` to `auth_service.dart`, `main.dart`, `settings_dialog.dart`, `login_page.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `UserService` connect `UserService` to `dev_config_page.dart`, `main.dart`, `settings_dialog.dart`, `user_service.dart`, `register_helmet_dialog.dart`, `State`?**
+- **Why does `UserService` connect `UserService` to `dev_config_page.dart`, `main.dart`, `settings_dialog.dart`, `user_service.dart`, `register_helmet_dialog.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `HelmetFeed` connect `UserService` to `main.dart`, `settings_dialog.dart`, `helmet_feed.dart`, `live_view.dart`, `State`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `admin`, `express`, `cors` to the rest of the system?**
-  _860 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _861 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.05837173579109063 - nodes in this community are weakly interconnected._
 - **Should `dev_config_page.dart` be split into smaller, more focused modules?**
-  _Cohesion score 0.04541062801932367 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.058823529411764705 - nodes in this community are weakly interconnected._
 - **Should `helmet.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
+- **Should `fleet_map.dart` be split into smaller, more focused modules?**
+  _Cohesion score 0.06628787878787878 - nodes in this community are weakly interconnected._

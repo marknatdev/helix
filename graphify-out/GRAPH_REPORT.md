@@ -1,16 +1,16 @@
 # Graph Report - helix  (2026-08-12)
 
 ## Corpus Check
-- 142 files · ~70,141 words
+- 149 files · ~76,650 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1405 nodes · 1662 edges · 119 communities (113 shown, 6 thin omitted)
+- 1446 nodes · 1737 edges · 122 communities (112 shown, 10 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f9492d24`
+- Built from commit: `a025e45e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -126,35 +126,38 @@
 - rules/graphify.md
 - workflows/graphify.md
 - Development Workflow
+- sw.js
+- archive-telemetry/index.ts
+- process-incident/index.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `Win32Window` - 22 edges
 2. `UserService` - 17 edges
-3. `Firebase Authentication Web SDK` - 15 edges
-4. `HelmetFeed` - 12 edges
-5. `MessageHandler` - 12 edges
-6. `AuthService` - 11 edges
-7. `Genkit Core Framework` - 11 edges
-8. `FlutterWindow` - 10 edges
-9. `Create` - 10 edges
-10. `WndProc` - 10 edges
+3. `isSupabaseConfigured()` - 17 edges
+4. `Firebase Authentication Web SDK` - 15 edges
+5. `App()` - 13 edges
+6. `HelmetFeed` - 12 edges
+7. `MessageHandler` - 12 edges
+8. `AuthService` - 11 edges
+9. `Genkit Core Framework` - 11 edges
+10. `FlutterWindow` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `_submit` --references--> `AuthService`  [EXTRACTED]
-  old-version/lib/auth/login_page.dart → old-version/lib/auth/auth_service.dart
-- `_loadHelmets` --references--> `UserService`  [EXTRACTED]
-  old-version/lib/views/dev_config_page.dart → old-version/lib/services/user_service.dart
-- `_register` --references--> `UserService`  [EXTRACTED]
-  old-version/lib/widgets/register_helmet_dialog.dart → old-version/lib/services/user_service.dart
-- `_unregister` --references--> `UserService`  [EXTRACTED]
-  old-version/lib/widgets/register_helmet_dialog.dart → old-version/lib/services/user_service.dart
 - `wWinMain()` --calls--> `CreateAndAttachConsole()`  [INFERRED]
   old-version/windows/runner/main.cpp → old-version/windows/runner/utils.cpp
+- `Win32Window::Win32Window()` --calls--> `Destroy`  [INFERRED]
+  old-version/windows/runner/win32_window.cpp → old-version/windows/runner/win32_window.h
+- `_LoginPageState` --references--> `AuthService`  [EXTRACTED]
+  old-version/lib/auth/login_page.dart → old-version/lib/auth/auth_service.dart
+- `_submit` --references--> `AuthService`  [EXTRACTED]
+  old-version/lib/auth/login_page.dart → old-version/lib/auth/auth_service.dart
+- `_CommandCenterPageState` --references--> `AuthService`  [EXTRACTED]
+  old-version/lib/main.dart → old-version/lib/auth/auth_service.dart
 
 ## Import Cycles
 - None detected.
 
-## Communities (119 total, 6 thin omitted)
+## Communities (122 total, 10 thin omitted)
 
 ### Community 0 - "Win32Window"
 Cohesion: 0.06
@@ -166,7 +169,7 @@ Nodes (33): dart:convert, dart:math, _batteryCtrl, build, _buildEditor, createSt
 
 ### Community 2 - "helmet.dart"
 Cohesion: 0.05
-Nodes (38): DateTime, AlertKind, alertKindColor, alertKindIcon, alertKindLabel, battery, crew, diff (+30 more)
+Nodes (39): DateTime, AlertKind, alertKindColor, alertKindIcon, alertKindLabel, battery, crew, diff (+31 more)
 
 ### Community 3 - "fleet_map.dart"
 Cohesion: 0.07
@@ -181,8 +184,8 @@ Cohesion: 0.09
 Nodes (23): AnimationController?, live_clock.dart, _ac, active, activeTab, build, children, count (+15 more)
 
 ### Community 6 - "login_page.dart"
-Cohesion: 0.12
-Nodes (15): dart:html, FormState, build, _busy, createState, _decoration, dispose, _email (+7 more)
+Cohesion: 0.09
+Nodes (21): auth_service.dart, dart:html, FormState, login_page.dart, AuthGate, build, child, build (+13 more)
 
 ### Community 7 - "app_theme.dart"
 Cohesion: 0.10
@@ -190,19 +193,19 @@ Nodes (19): accent, AppColors, background, base, border, buildAppTheme, card, fo
 
 ### Community 8 - "main.dart"
 Cohesion: 0.11
-Nodes (18): auth/auth_gate.dart, firebase_options.dart, _buildTab, createState, _filter, HelixApp, kSiteName, main (+10 more)
+Nodes (17): auth/auth_gate.dart, firebase_options.dart, _buildTab, createState, _filter, kSiteName, main, _selectedId (+9 more)
 
 ### Community 9 - "functions/package.json"
 Cohesion: 0.11
 Nodes (17): cors, dotenv, express, firebase-admin, dependencies, cors, dotenv, express (+9 more)
 
 ### Community 10 - "StatelessWidget"
-Cohesion: 0.07
-Nodes (30): HelmetStatus, _Label, _Badge, CommandHeader, _NavItem, _HudIconBtn, _HudPill, _LegendDot (+22 more)
+Cohesion: 0.08
+Nodes (29): HelixApp, _Badge, CommandHeader, _NavItem, _HudIconBtn, _HudPill, _LegendDot, build (+21 more)
 
 ### Community 11 - "settings_dialog.dart"
-Cohesion: 0.13
-Nodes (14): ../auth/auth_service.dart, _ActionTile, destructive, icon, onTap, _RowTile, _SectionLabel, subtitle (+6 more)
+Cohesion: 0.11
+Nodes (23): ../auth/auth_service.dart, ChangeNotifier, MaterialPageRoute, AuthService, _submit, build, _openSettings, HelmetFeed (+15 more)
 
 ### Community 12 - "helmet_detail.dart"
 Cohesion: 0.13
@@ -222,11 +225,11 @@ Nodes (14): acknowledge, acknowledgeAll, _activeIds, alerts, _alertsSub, _connec
 
 ### Community 16 - "auth_service.dart"
 Cohesion: 0.14
-Nodes (13): FirebaseAuth, _auth, _authSub, dispose, isSignedIn, messageFor, signIn, signOut (+5 more)
+Nodes (13): dart:async, FirebaseAuth, _auth, _authSub, dispose, isSignedIn, messageFor, signIn (+5 more)
 
 ### Community 17 - "user_service.dart"
-Cohesion: 0.17
-Nodes (11): clear, _db, dispose, _helmetIds, listen, _loaded, registerHelmet, _sub (+3 more)
+Cohesion: 0.15
+Nodes (12): clear, _db, dispose, _helmetIds, listen, _loaded, registerHelmet, _sub (+4 more)
 
 ### Community 18 - "index.js"
 Cohesion: 0.15
@@ -257,24 +260,24 @@ Cohesion: 0.17
 Nodes (11): alerts, build, child, helmets, _InlineStat, label, _ReportCard, ReportsView (+3 more)
 
 ### Community 25 - "register_helmet_dialog.dart"
-Cohesion: 0.17
-Nodes (12): build, _busy, _controller, createState, dispose, _error, _register, RegisterHelmetDialog (+4 more)
+Cohesion: 0.19
+Nodes (13): UserService, _loadHelmets, build, _busy, _controller, createState, dispose, _error (+5 more)
 
 ### Community 26 - "State"
-Cohesion: 0.29
-Nodes (7): LoginPage, CommandCenterPage, _UserHelmetBridge, DevConfigPage, LiveClock, _LiveClockState, StatefulWidget
+Cohesion: 0.27
+Nodes (10): LoginPage, _LoginPageState, CommandCenterPage, _CommandCenterPageState, _UserHelmetBridge, _UserHelmetBridgeState, DevConfigPage, _DevConfigPageState (+2 more)
 
 ### Community 27 - "manifest.json"
 Cohesion: 0.18
 Nodes (10): background_color, description, display, icons, name, orientation, prefer_related_applications, short_name (+2 more)
 
 ### Community 28 - "App.jsx"
-Cohesion: 0.31
-Nodes (10): App(), LoginModal(), OpenStreetMap(), SupervisorDevModal(), fetchLiveHelmetsFromSupabase(), fetchLiveIncidentsFromSupabase(), initialIncidents, initialWorkers (+2 more)
+Cohesion: 0.15
+Nodes (28): App(), LoginModal(), OpenStreetMap(), SupervisorDevModal(), canAccessDevTool(), canAcknowledgeIncidents(), canManageSites(), canManageZones() (+20 more)
 
 ### Community 29 - "UserService"
-Cohesion: 0.29
-Nodes (14): ChangeNotifier, MaterialPageRoute, AuthService, _LoginPageState, build, _CommandCenterPageState, _openSettings, _UserHelmetBridgeState (+6 more)
+Cohesion: 0.18
+Nodes (10): background_color, description, display, icons, name, orientation, scope, short_name (+2 more)
 
 ### Community 30 - "firestore_helmet_service.dart"
 Cohesion: 0.22
@@ -353,8 +356,8 @@ Cohesion: 0.17
 Nodes (11): Firestore Web SDK Usage Guide, Get a Single Document (`getDoc`), Get Multiple Documents (`getDocs`), Handle Changes (Added/Modified/Removed), Initialization, Listen to a Document/Query (`onSnapshot`), Order and Limit, Queries (+3 more)
 
 ### Community 57 - "HTTP Handlers"
-Cohesion: 0.17
-Nodes (11): dart:async, build, createState, dispose, _fmt, initState, _now, _timer (+3 more)
+Cohesion: 0.15
+Nodes (13): build, createState, dispose, _fmt, initState, LiveClock, _LiveClockState, _now (+5 more)
 
 ### Community 58 - "Getting Started"
 Cohesion: 0.18
@@ -415,10 +418,6 @@ Nodes (8): Collection Group Support, Collections, Document Data Model, Documents
 ### Community 72 - "Firestore Indexes Reference"
 Cohesion: 0.22
 Nodes (9): CLI Commands, Config files, Firestore Indexes Reference, Index Density, Index Ordering, Index Structure, Management, Query Support Examples (+1 more)
-
-### Community 73 - "auth_gate.dart"
-Cohesion: 0.25
-Nodes (7): auth_service.dart, login_page.dart, AuthGate, build, child, package:provider/provider.dart, Widget
 
 ### Community 74 - "Firebase Auth Setup"
 Cohesion: 0.25
@@ -577,24 +576,24 @@ Cohesion: 0.40
 Nodes (5): 1. Define Data Model (`schema/schema.gql`), 2. Define Operations (`connector/queries.gql`, `connector/mutations.gql`), 3. Secure Your App (`connector/` files), 4. Generate & Use SDKs, Development Workflow
 
 ## Knowledge Gaps
-- **861 isolated node(s):** `admin`, `express`, `cors`, `path`, `db` (+856 more)
+- **876 isolated node(s):** `admin`, `express`, `cors`, `path`, `db` (+871 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthService` connect `UserService` to `auth_service.dart`, `main.dart`, `settings_dialog.dart`, `login_page.dart`?**
+- **Why does `AuthService` connect `settings_dialog.dart` to `auth_service.dart`, `main.dart`, `State`, `login_page.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `UserService` connect `UserService` to `dev_config_page.dart`, `main.dart`, `settings_dialog.dart`, `user_service.dart`, `register_helmet_dialog.dart`?**
+- **Why does `UserService` connect `register_helmet_dialog.dart` to `dev_config_page.dart`, `main.dart`, `settings_dialog.dart`, `user_service.dart`, `State`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **What connects `admin`, `express`, `cors` to the rest of the system?**
-  _861 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _876 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.05837173579109063 - nodes in this community are weakly interconnected._
 - **Should `dev_config_page.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.058823529411764705 - nodes in this community are weakly interconnected._
 - **Should `helmet.dart` be split into smaller, more focused modules?**
-  _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `fleet_map.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.06628787878787878 - nodes in this community are weakly interconnected._

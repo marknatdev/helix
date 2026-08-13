@@ -112,8 +112,10 @@
   "110": "Genkit Shelf Plugin (`genkit_shelf`)",
   "111": "DefineStreamingFlow",
   "112": "firebase-firestore-enterprise-native-mode/SKILL.md",
+  "113": "Relationships",
   "114": "firebase-firestore-standard/SKILL.md",
   "115": "helix_command_center",
   "116": "rules/graphify.md",
-  "117": "workflows/graphify.md"
+  "117": "workflows/graphify.md",
+  "118": "Development Workflow"
 }
