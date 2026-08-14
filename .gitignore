@@ -63,6 +63,9 @@ app.*.map.json
 .agents/
 .hermes/
 
+# interview-me spec verify caches (regenerable; the .interview.json files are tracked)
+.*.verify-cache.json
+
 # Python / Simulator
 __pycache__/
 .venv/

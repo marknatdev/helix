@@ -4,28 +4,28 @@ import 'package:provider/provider.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 
-/// Dialog that lets the user register new helmet IDs and remove existing ones.
-class RegisterHelmetDialog extends StatefulWidget {
-  const RegisterHelmetDialog({super.key});
+/// Dialog for claiming a helmet by its pairing code (see
+/// spec-device-pairing-system.md) and releasing helmets already claimed.
+/// Replaces the old free-text RegisterHelmetDialog — claiming now requires
+/// server-side proof of ownership instead of typing an arbitrary ID.
+class ClaimHelmetDialog extends StatefulWidget {
+  const ClaimHelmetDialog({super.key});
 
   @override
-  State<RegisterHelmetDialog> createState() => _RegisterHelmetDialogState();
+  State<ClaimHelmetDialog> createState() => _ClaimHelmetDialogState();
 }
 
-class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
-  final _controller = TextEditingController();
+class _ClaimHelmetDialogState extends State<ClaimHelmetDialog> {
+  final _idController = TextEditingController();
+  final _codeController = TextEditingController();
   String? _error;
   bool _busy = false;
 
-  Future<void> _register() async {
-    final id = _controller.text.trim().toUpperCase();
-    if (id.isEmpty) {
-      setState(() => _error = 'Enter a helmet ID.');
-      return;
-    }
-    final svc = context.read<UserService>();
-    if (svc.helmetIds.contains(id)) {
-      setState(() => _error = '$id is already registered.');
+  Future<void> _claim() async {
+    final id = _idController.text.trim().toUpperCase();
+    final code = _codeController.text.trim();
+    if (id.isEmpty || code.isEmpty) {
+      setState(() => _error = 'Enter both the helmet ID and its pairing code.');
       return;
     }
     setState(() {
@@ -33,27 +33,30 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
       _error = null;
     });
     try {
-      await svc.registerHelmet(id);
-      _controller.clear();
+      await context
+          .read<UserService>()
+          .claimHelmet(helmetId: id, pairingCode: code);
+      _idController.clear();
+      _codeController.clear();
       if (mounted) setState(() => _busy = false);
     } catch (e) {
       if (mounted) {
         setState(() {
           _busy = false;
-          _error = 'Failed: $e';
+          _error = 'Claim failed: $e';
         });
       }
     }
   }
 
-  Future<void> _unregister(String id) async {
+  Future<void> _release(String id) async {
     final svc = context.read<UserService>();
     try {
-      await svc.unregisterHelmet(id);
+      await svc.unclaimHelmet(id);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove $id: $e')),
+          SnackBar(content: Text('Failed to release $id: $e')),
         );
       }
     }
@@ -61,7 +64,8 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _idController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
@@ -76,21 +80,20 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
         side: const BorderSide(color: AppColors.border),
       ),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420, maxHeight: 520),
+        constraints: const BoxConstraints(maxWidth: 420, maxHeight: 560),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header
               Row(children: [
-                const Icon(Icons.add_circle_outline,
+                const Icon(Icons.qr_code_scanner,
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
-                const Text('Register Helmets',
-                    style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w600)),
+                const Text('Claim a Helmet',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
@@ -103,20 +106,40 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
               ]),
               const SizedBox(height: 4),
               const Text(
-                'Add helmet IDs to your account. Only registered helmets appear on the dashboard.',
+                'Enter the helmet ID and the pairing code from its QR label. '
+                'Only registered/claimed helmets appear on the dashboard.',
                 style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
               ),
               const SizedBox(height: 16),
 
-              // Input row
+              TextField(
+                controller: _idController,
+                style: const TextStyle(fontSize: 13),
+                textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(
+                  hintText: 'Helmet ID, e.g. HLX-001',
+                  hintStyle:
+                      const TextStyle(fontSize: 13, color: AppColors.mutedFg),
+                  isDense: true,
+                  filled: true,
+                  fillColor: AppColors.accent,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Row(children: [
                 Expanded(
                   child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(fontSize: 13),
-                    textCapitalization: TextCapitalization.characters,
+                    controller: _codeController,
+                    style: const TextStyle(
+                        fontSize: 13, fontFamily: 'monospace'),
                     decoration: InputDecoration(
-                      hintText: 'e.g. HLX-001',
+                      hintText: 'Pairing code',
                       hintStyle: const TextStyle(
                           fontSize: 13, color: AppColors.mutedFg),
                       isDense: true,
@@ -126,28 +149,17 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
                           horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
-                        borderSide:
-                            const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        borderSide:
-                            const BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        borderSide:
-                            const BorderSide(color: AppColors.primary),
+                        borderSide: const BorderSide(color: AppColors.border),
                       ),
                     ),
-                    onSubmitted: (_) => _register(),
+                    onSubmitted: (_) => _claim(),
                   ),
                 ),
                 const SizedBox(width: 8),
                 SizedBox(
                   height: 36,
                   child: ElevatedButton(
-                    onPressed: _busy ? null : _register,
+                    onPressed: _busy ? null : _claim,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.primaryFg,
@@ -161,7 +173,7 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
                             height: 14,
                             child: CircularProgressIndicator(
                                 strokeWidth: 2, color: AppColors.primaryFg))
-                        : const Text('Add', style: TextStyle(fontSize: 13)),
+                        : const Text('Claim', style: TextStyle(fontSize: 13)),
                   ),
                 ),
               ]),
@@ -174,9 +186,7 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
               ],
 
               const SizedBox(height: 16),
-
-              // Registered helmets list
-              Text('REGISTERED (${ids.length})'.toUpperCase(),
+              Text('CLAIMED (${ids.length})'.toUpperCase(),
                   style: const TextStyle(
                     fontSize: 10,
                     letterSpacing: 1.6,
@@ -193,7 +203,7 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Center(
-                    child: Text('No helmets registered yet.',
+                    child: Text('No helmets claimed yet.',
                         style: TextStyle(
                             fontSize: 12, color: AppColors.mutedFg)),
                   ),
@@ -203,7 +213,7 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
                   child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: ids.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 4),
+                    separatorBuilder: (_, _) => const SizedBox(height: 4),
                     itemBuilder: (_, i) {
                       final id = ids[i];
                       return Container(
@@ -222,14 +232,12 @@ class _RegisterHelmetDialogState extends State<RegisterHelmetDialog> {
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500)),
                           const Spacer(),
-                          InkWell(
-                            onTap: () => _unregister(id),
-                            borderRadius: BorderRadius.circular(4),
-                            child: const Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Icon(Icons.remove_circle_outline,
-                                  size: 14, color: AppColors.statusSos),
-                            ),
+                          TextButton(
+                            onPressed: () => _release(id),
+                            style: TextButton.styleFrom(
+                                foregroundColor: AppColors.statusSos),
+                            child: const Text('Release',
+                                style: TextStyle(fontSize: 12)),
                           ),
                         ]),
                       );

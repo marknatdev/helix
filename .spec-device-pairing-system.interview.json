@@ -1,0 +1,60 @@
+{
+  "specName": "device-pairing-system",
+  "timestamp": "2026-08-14T00:00:00Z",
+  "status": "spec-written",
+  "capturedAtCommit": "d49cffe",
+  "sourceIssue": null,
+  "baseline": {
+    "derivedFrom": "pre-analysis fork + codebase reads during interview",
+    "capturedAtCommit": "d49cffe",
+    "claims": [
+      { "area": "problem", "claim": "UserService.registerHelmet() writes arrayUnion([id]) to users/{uid}.helmetIds with no verification", "file": "lib/services/user_service.dart" },
+      { "area": "problem", "claim": "firestore.rules grants full read/write on helmets/{helmetId} to any uid with that id in helmetIds", "file": "firestore.rules" },
+      { "area": "credential-model", "claim": "docs/architecture/decisions.md and docs/architecture/receiver-protocol.md do not exist in the working tree or git history (docs/ was deleted in an earlier session revert)", "file": "docs/architecture/" },
+      { "area": "webhook-auth", "claim": "functions/index.js authenticates /lora-uplink and /chirpstack-webhook with one shared X-Webhook-Token; firebase.json has no functions block (not a deployed Cloud Function)", "file": "functions/index.js" },
+      { "area": "admin-gating", "claim": "firestore.rules contains an orphaned sites/{siteId} block with isSupervisor()/role checks unused by the current flat schema", "file": "firestore.rules" },
+      { "area": "prior-art", "claim": "A Python stdlib HTTP server + Leaflet map simulator (simulator/) posted to /lora-uplink; deleted in commit f9492d2 in favor of in-app DevConfigPage", "file": "git history: 8013bdb, a3f3358, f9492d2" }
+    ]
+  },
+  "coverageMap": {
+    "Problem": "done",
+    "Identity/Credential Model": "done",
+    "Provisioning Scope": "done",
+    "Helmet Claim UX": "done",
+    "Receiver Provisioning UX": "done",
+    "Admin Gating": "done",
+    "Revocation": "done",
+    "Webhook Auth Integration": "done",
+    "Migration": "done"
+  },
+  "qaLog": [
+    { "area": "Problem", "question": "Primary goal of the (separate, dependent) data-flow simulator that motivated this spec.", "answer": "Local dev/testing tool" },
+    { "area": "Provisioning Scope (context)", "question": "Which injection path should the simulator use.", "answer": "Through the webhook (Recommended)" },
+    { "area": "Problem", "question": "How should target-environment safety be handled (webhook writes to live smhelmet-67 Firestore, no dev/staging project exists).", "answer": "User declined offered options and instead redirected: build a real pairing system first, make sure it works in a real-world scenario." },
+    { "area": "Identity/Credential Model", "question": "Should the pairing system reuse the existing ADR-005 credential model or design fresh.", "answer": "Adapt the existing ADR-005 model (Recommended) — later corrected by red team: ADR-005 does not exist, see D7." },
+    { "area": "Provisioning Scope", "question": "What physical thing should get credentialed/verified — Receivers only, Helmets only, or both.", "answer": "Both, two-tier" },
+    { "area": "Helmet Claim UX", "question": "How does a user prove they own a physical helmet when claiming it.", "answer": "Pairing code / QR on the helmet (Recommended)" },
+    { "area": "Receiver Provisioning UX", "question": "Who provisions a new Receiver gateway, through what interface.", "answer": "Admin-only in-app screen (Recommended)" },
+    { "area": "Admin Gating", "question": "How should 'admin-only' actually be enforced given there's no role system (pushback: none exists today).", "answer": "Add a minimal role field (Recommended)" },
+    { "area": "Revocation", "question": "What should revocation cover (helmet unclaim, receiver revoke, both, or neither for now).", "answer": "Both helmet unclaim + receiver revoke (Recommended)" },
+    { "area": "Webhook Auth Integration", "question": "Should this spec replace the webhook's shared X-Webhook-Token with per-receiver credential auth.", "answer": "Yes, replace it (Recommended)" },
+    { "area": "Migration", "question": "Migration strategy for helmets/users under the OLD self-registration model on the LIVE deployment.", "answer": "Require re-claim for everyone" }
+  ],
+  "redTeamStatus": "completed",
+  "redTeamFindings": [
+    { "dimension": "Contradictory Decisions", "severity": "critical", "title": "ADR-005/receiver-protocol.md do not exist in the repository", "resolution": "Design fresh in this spec (D7)" },
+    { "dimension": "Security Gaps", "severity": "critical", "title": "Old self-claim path not decided for removal", "resolution": "Delete UserService.registerHelmet and RegisterHelmetDialog (D9)" },
+    { "dimension": "Security Gaps", "severity": "critical", "title": "role field could be client-self-escalated via users/{uid} rule allowlist", "resolution": "Admin Cloud Function only, never client-writable (D6)" },
+    { "dimension": "Dependency Risks", "severity": "critical", "title": "Webhook is a manually-run local process with a live admin key, not a deployed Cloud Function", "resolution": "Migrate to deployed Cloud Functions Gen2 (D10)" },
+    { "dimension": "Contradictory Decisions", "severity": "major", "title": "False 'no role system exists' premise — orphaned sites/ role hierarchy already in firestore.rules", "resolution": "Delete the orphaned sites/ rules block (D8)" },
+    { "dimension": "Failure Modes", "severity": "major", "title": "No atomicity for claim operation (verify code / mark claimed / invalidate code)", "resolution": "Single Firestore transaction, explicit already-claimed error (D11)" },
+    { "dimension": "Security Gaps", "severity": "major", "title": "No pairing-code entropy or rate-limiting spec", "resolution": "High-entropy code + per-uid rate limit/lockout (D12)" },
+    { "dimension": "Operational Concerns", "severity": "major", "title": "'Require re-claim for everyone' has no rollout/rollback plan for a live app", "resolution": "Scheduled maintenance window + advance notice (D13)" },
+    { "dimension": "Data Integrity", "severity": "major", "title": "Wiping claims can strand unacknowledgeable alerts during transition", "resolution": "Admin retains blanket alert-ack rights during rollout (D14)" },
+    { "dimension": "Scaling Cliffs", "severity": "minor", "title": "Per-uplink credential lookup adds a Firestore read with no caching decision", "resolution": "In-memory verifier cache, invalidated on revoke (D15)" },
+    { "dimension": "Wildcard", "severity": "minor", "title": "No bootstrap path for the first admin account once role is locked down", "resolution": "One-time env-var-gated bootstrap Cloud Function (D16)" }
+  ],
+  "previewUrl": "https://claude.ai/code/artifact/fe87ef22-1b7c-475c-8a69-54cddbc8bcbe",
+  "feedbackRounds": [],
+  "driftLedger": []
+}

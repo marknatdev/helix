@@ -1,8 +1,8 @@
 {
   "name": "helix-webhook",
-  "description": "ChirpStack webhook receiver → Firestore for HELIX helmet telemetry",
+  "description": "HELIX Receiver telemetry ingestion + admin API — standalone Express server, deployed to Render (see render.yaml), runnable locally via `node index.js`",
   "engines": {
-    "node": ">=18"
+    "node": "22"
   },
   "main": "index.js",
   "scripts": {

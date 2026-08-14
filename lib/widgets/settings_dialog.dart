@@ -6,8 +6,9 @@ import '../auth/auth_service.dart';
 import '../services/user_service.dart';
 import '../state/helmet_feed.dart';
 import '../theme/app_theme.dart';
-import 'register_helmet_dialog.dart';
+import 'claim_helmet_dialog.dart';
 import '../views/dev_config_page.dart';
+import '../views/receiver_admin_page.dart';
 
 class SettingsDialog extends StatelessWidget {
   const SettingsDialog({super.key});
@@ -126,22 +127,49 @@ class SettingsDialog extends StatelessWidget {
                     ctx.select<UserService, List<String>>((s) => s.helmetIds);
                 return _ActionTile(
                   icon: Icons.construction,
-                  title: 'Manage registered helmets',
+                  title: 'Manage claimed helmets',
                   subtitle: helmetIds.isEmpty
-                      ? 'No helmets registered — tap to add.'
+                      ? 'No helmets claimed — tap to add.'
                       : '${helmetIds.length} helmet(s): ${helmetIds.join(", ")}',
                   onTap: () {
                     showDialog(
                       context: ctx,
                       builder: (_) => ChangeNotifierProvider.value(
                         value: ctx.read<UserService>(),
-                        child: const RegisterHelmetDialog(),
+                        child: const ClaimHelmetDialog(),
                       ),
                     );
                   },
                 );
               }),
               const Divider(color: AppColors.border, height: 20),
+
+              // Admin: manage receivers — only visible to users with role == 'admin'.
+              Builder(builder: (ctx) {
+                final isAdmin =
+                    ctx.select<UserService, bool>((s) => s.isAdmin);
+                if (!isAdmin) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _SectionLabel('Admin'),
+                    const SizedBox(height: 6),
+                    _ActionTile(
+                      icon: Icons.router_outlined,
+                      title: 'Manage receivers',
+                      subtitle: 'Provision and revoke gateway credentials.',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ReceiverAdminPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(color: AppColors.border, height: 20),
+                  ],
+                );
+              }),
 
               // Acknowledge all
               _ActionTile(
