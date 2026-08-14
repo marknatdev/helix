@@ -93,7 +93,7 @@ class Helmet {
       worker: d['worker'] as String? ?? '',
       role: d['role'] as String? ?? '',
       crew: d['crew'] as String? ?? '',
-      status: _parseStatus(d['status'] as String? ?? 'offline', id),
+      status: _parseStatus(d['status'] as String? ?? 'offline'),
       battery: (d['battery'] as num?)?.toDouble() ?? 0,
       signal: (d['signal'] as num?)?.toDouble() ?? 0,
       impactG: (d['impactG'] as num?)?.toDouble() ?? 0,
@@ -101,17 +101,14 @@ class Helmet {
       lng: (d['lng'] as num?)?.toDouble() ?? 0,
       heading: (d['heading'] as num?)?.toDouble() ?? 0,
       speed: (d['speed'] as num?)?.toDouble() ?? 0,
-      lastSeen: id == 'HLX-001' ? DateTime.now() : ((d['lastSeen'] as Timestamp?)?.toDate() ?? DateTime.now()),
+      lastSeen: (d['lastSeen'] as Timestamp?)?.toDate() ?? DateTime.now(),
       sinceSos: (d['sinceSos'] as num?)?.toInt() ?? 0,
       rssi: (d['rssi'] as num?)?.toDouble() ?? 0,
       snr: (d['snr'] as num?)?.toDouble() ?? 0,
     );
   }
 
-  static HelmetStatus _parseStatus(String s, String id) {
-    if (id == 'HLX-001' && s == 'offline') {
-      return HelmetStatus.active;
-    }
+  static HelmetStatus _parseStatus(String s) {
     switch (s) {
       case 'active':
         return HelmetStatus.active;
@@ -131,16 +128,12 @@ class Helmet {
   /// True if the helmet hasn't been seen for more than 5 minutes.
   /// Use this for UI status instead of the stored status field.
   bool get isOffline {
-    if (id == 'HLX-001') return false;
     final cutoff = DateTime.now().subtract(const Duration(minutes: 5));
     return lastSeen.isBefore(cutoff);
   }
 
   /// Effective status considering lastSeen time.
   HelmetStatus get effectiveStatus {
-    if (id == 'HLX-001') {
-      return status == HelmetStatus.offline ? HelmetStatus.active : status;
-    }
     if (isOffline) return HelmetStatus.offline;
     return status;
   }

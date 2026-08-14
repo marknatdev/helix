@@ -38,10 +38,13 @@ class FirestoreHelmetService {
     return _db.collection('alerts').doc(alertId).update({'resolved': true});
   }
 
-  /// Mark all unresolved alerts as resolved.
-  Future<void> acknowledgeAllAlerts() async {
+  /// Mark all unresolved alerts for the given helmet IDs as resolved.
+  /// Scoped to [helmetIds] so a user can only resolve their own alerts.
+  Future<void> acknowledgeAllAlerts(List<String> helmetIds) async {
+    if (helmetIds.isEmpty) return;
     final snap = await _db
         .collection('alerts')
+        .where('helmetId', whereIn: helmetIds)
         .where('resolved', isEqualTo: false)
         .get();
     final batch = _db.batch();

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,13 +42,15 @@ class SettingsDialog extends StatelessWidget {
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onDoubleTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const DevConfigPage(),
-                      ),
-                    );
-                  },
+                  onDoubleTap: kDebugMode
+                      ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const DevConfigPage(),
+                            ),
+                          );
+                        }
+                      : null,
                   child: const Text('Command center settings',
                       style: TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w600)),

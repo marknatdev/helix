@@ -59,8 +59,9 @@ service cloud.firestore {
     // Top-level alerts collection for device-generated alerts.
     match /alerts/{alertId} {
       allow read: if isAuthed();
-      // Authenticated users may mark alerts as resolved.
+      // A user may only resolve alerts for helmets registered to their own account.
       allow update: if isAuthed()
+        && resource.data.helmetId in userDoc().helmetIds
         && request.resource.data.diff(resource.data).affectedKeys()
            .hasOnly(['resolved']);
       allow create, delete: if false;  // Only admin SDK creates.

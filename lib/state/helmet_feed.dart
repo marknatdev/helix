@@ -87,7 +87,7 @@ class HelmetFeed extends ChangeNotifier {
 
   /// Mark all unresolved alerts as resolved (batch write to Firestore).
   Future<void> acknowledgeAll() async {
-    await _service.acknowledgeAllAlerts();
+    await _service.acknowledgeAllAlerts(_activeIds);
   }
 
   @override
