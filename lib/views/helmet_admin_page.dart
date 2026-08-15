@@ -113,15 +113,37 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
-        title: const Text('Pairing code — shown once'),
+        title: const Text('Helmet provisioned'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(helmetId,
-                style: const TextStyle(
-                    fontFamily: 'monospace', fontSize: 12, color: AppColors.mutedFg)),
-            const SizedBox(height: 4),
+            const Text('HELMET ID',
+                style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
+            const SizedBox(height: 2),
+            Row(children: [
+              Expanded(
+                child: SelectableText(
+                  helmetId,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: helmetId));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Helmet ID copied.')),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 15),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              ),
+            ]),
+            const SizedBox(height: 10),
+            const Text('PAIRING CODE — SHOWN ONCE',
+                style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
+            const SizedBox(height: 2),
             SelectableText(
               pairingCode,
               style: const TextStyle(
@@ -129,9 +151,10 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'This will not be shown again. Give it to whoever is claiming '
-              'this helmet (Settings → Manage claimed helmets, or the '
-              '"Add helmet" button).',
+              'The pairing code will not be shown again. Give it to whoever '
+              'is claiming this helmet (Settings → Manage claimed helmets, '
+              'or the "Add helmet" button). Helmet ID is not secret; it '
+              'stays visible below.',
               style: TextStyle(fontSize: 11, color: AppColors.statusWarn),
             ),
           ],
@@ -141,10 +164,10 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: pairingCode));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied to clipboard.')),
+                const SnackBar(content: Text('Pairing code copied.')),
               );
             },
-            child: const Text('Copy'),
+            child: const Text('Copy code'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -231,7 +254,7 @@ class _HistoryTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.helmetId,
+                SelectableText(entry.helmetId,
                     style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 13,
@@ -244,8 +267,19 @@ class _HistoryTile extends StatelessWidget {
               ],
             ),
           ),
-          const Text('Code already shown',
-              style: TextStyle(fontSize: 10, color: AppColors.mutedFg)),
+          IconButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: entry.helmetId));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Helmet ID copied.')),
+              );
+            },
+            icon: const Icon(Icons.copy, size: 14),
+            color: AppColors.mutedFg,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+            tooltip: 'Copy helmet ID',
+          ),
         ],
       ),
     );
