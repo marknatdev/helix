@@ -68,11 +68,5 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
-  },
-  "database": {
-    "rules": "database.rules.json"
   }
 }

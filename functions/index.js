@@ -13,10 +13,6 @@
  * since a key file can't be committed), GOOGLE_APPLICATION_CREDENTIALS (a file
  * path, for local dev), or the local committed key file as a last-resort default.
  *
- * ChirpStack config:
- *   POST  <deploy-url>/chirpstack-webhook
- *   Header: X-Webhook-Token: <WEBHOOK_SECRET>
- *
  * Receiver telemetry (per-device credential, see spec-device-pairing-system.md D5):
  *   POST  <deploy-url>/lora-uplink
  *   Headers: X-Receiver-Id: <receiverId>, X-Receiver-Credential: <raw credential>
@@ -55,10 +51,6 @@ app.use(cors({
   },
 }));
 app.use(express.json({ limit: "1mb" }));
-
-// ─── Shared-secret auth (set via CHIRPSTACK_WEBHOOK_SECRET in .env) ──────────
-// IMPORTANT: If no secret is configured the endpoint rejects ALL requests.
-const WEBHOOK_SECRET = process.env.CHIRPSTACK_WEBHOOK_SECRET || "";
 
 // Alert deduplication cooldown (ms). Prevents spamming the same alert type for
 // the same helmet within this window.
@@ -132,166 +124,32 @@ function voltageToPct(v) {
   return Math.round(((v - 3.2) / 1.0) * 100);
 }
 
-/** Extract decoded CayenneLPP fields from ChirpStack `object` map. */
-function parseLpp(obj) {
-  const out = {};
-  if (!obj) return out;
-
-  // ChirpStack CayenneLPP decoder puts fields like:
-  //   gps_1: { latitude, longitude, altitude }
-  //   analogOutput_2: <value>   (speed)
-  //   analogOutput_3: <value>   (heading)
-  //   analogOutput_4: <value>   (battery %)
-  //   digitalInput_5: <value>   (sats)
-  //   analogOutput_6: <value>   (heart rate bpm)
-
-  if (obj.gps_1) {
-    out.lat = obj.gps_1.latitude;
-    out.lng = obj.gps_1.longitude;
-    out.alt = obj.gps_1.altitude;
-  }
-  if (obj.analogOutput_2 !== undefined) out.speed = obj.analogOutput_2;
-  if (obj.analogOutput_3 !== undefined) out.heading = obj.analogOutput_3;
-  if (obj.analogOutput_4 !== undefined) out.battery = obj.analogOutput_4;
-  if (obj.digitalInput_5 !== undefined) out.satellites = obj.digitalInput_5;
-
-  return out;
+/** Create an alert for a helmet unless an unresolved one of the same kind
+ * already exists within the cooldown window. */
+async function maybeAlert(batch, helmetId, kind, message, now) {
+  const cutoff = new Date(Date.now() - ALERT_COOLDOWN_MS);
+  const existing = await db.collection("alerts")
+    .where("helmetId", "==", helmetId)
+    .where("kind", "==", kind)
+    .where("resolved", "==", false)
+    .where("ts", ">=", cutoff)
+    .limit(1)
+    .get();
+  if (!existing.empty) return false; // skip duplicate
+  const alertRef = db.collection("alerts").doc();
+  batch.set(alertRef, {
+    helmetId,
+    worker: "",
+    kind,
+    message,
+    ts: now,
+    resolved: false,
+  });
+  return true;
 }
 
-// ─── Webhook endpoint ────────────────────────────────────────────────────────
-
-app.post("/chirpstack-webhook", async (req, res) => {
-  // 1) Validate per-receiver credential (D5) — replaces the old shared token.
-  const auth = await verifyReceiver(req);
-  if (!auth.ok) {
-    console.warn(`[AUTH] chirpstack-webhook rejected: ${auth.reason}`);
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
-  const body = req.body;
-
-  // Validate body is a non-null object
-  if (!body || typeof body !== "object") {
-    return res.status(400).json({ error: "Invalid request body" });
-  }
-
-  // ChirpStack v4 wraps uplink data in `data` for the "up" event
-  const data = body.data || body;
-
-  const deviceName = (data.deviceInfo && data.deviceInfo.deviceName) || "";
-  const devEui = (data.deviceInfo && data.deviceInfo.devEui) || "";
-
-  if (!devEui) {
-    return res.status(400).json({ error: "Missing devEui" });
-  }
-
-  // Use deviceName as the helmet ID (e.g., "HLX-0142"), fallback to devEui
-  const helmetId = deviceName || devEui;
-
-  // 2) Decode payload
-  const decoded = parseLpp(data.object || {});
-
-  // Validate critical numeric fields to prevent garbage writes
-  if (decoded.lat !== undefined && typeof decoded.lat !== "number") {
-    return res.status(400).json({ error: "Invalid lat: must be a number" });
-  }
-  if (decoded.lng !== undefined && typeof decoded.lng !== "number") {
-    return res.status(400).json({ error: "Invalid lng: must be a number" });
-  }
-
-  // 3) Extract best RSSI from rxInfo array
-  let bestRssi = -120;
-  let bestSnr = 0;
-  if (Array.isArray(data.rxInfo)) {
-    for (const rx of data.rxInfo) {
-      const rssi = typeof rx.rssi === "number" ? rx.rssi : -120;
-      if (rssi > bestRssi) {
-        bestRssi = rssi;
-        bestSnr = typeof rx.snr === "number" ? rx.snr
-                : typeof rx.loRaSNR === "number" ? rx.loRaSNR : 0;
-      }
-    }
-  }
-
-  // 4) Build Firestore document
-  const now = admin.firestore.FieldValue.serverTimestamp();
-  const signal = rssiToPercent(bestRssi);
-  const battery = decoded.battery !== undefined ? decoded.battery : -1;
-
-  let status = "active";
-  if (decoded.speed === 0) {
-    status = "idle";
-  }
-
-  const doc = {
-    helmetId,
-    devEui,
-    lat: decoded.lat !== undefined ? decoded.lat : 0,
-    lng: decoded.lng !== undefined ? decoded.lng : 0,
-    alt: decoded.alt !== undefined ? decoded.alt : 0,
-    speed: decoded.speed !== undefined ? decoded.speed : 0,
-    heading: decoded.heading !== undefined ? decoded.heading : 0,
-    battery,
-    signal,
-    rssi: bestRssi,
-    snr: bestSnr,
-    satellites: decoded.satellites || 0,
-    status,
-    lastSeen: now,
-    updatedAt: now,
-  };
-
-  try {
-    // 5) Upsert helmet doc
-    await db.collection("helmets").doc(helmetId).set(doc, { merge: true });
-
-    // 6) Generate alerts if needed
-    const alertsBatch = db.batch();
-    let alertCount = 0;
-
-    // Helper: only create an alert if no unresolved alert of the same kind
-    // exists for this helmet within the cooldown window.
-    async function maybeAlert(kind, message) {
-      const cutoff = new Date(Date.now() - ALERT_COOLDOWN_MS);
-      const existing = await db.collection("alerts")
-        .where("helmetId", "==", helmetId)
-        .where("kind", "==", kind)
-        .where("resolved", "==", false)
-        .where("ts", ">=", cutoff)
-        .limit(1)
-        .get();
-      if (!existing.empty) return; // skip duplicate
-      const alertRef = db.collection("alerts").doc();
-      alertsBatch.set(alertRef, {
-        helmetId,
-        worker: "",
-        kind,
-        message,
-        ts: now,
-        resolved: false,
-      });
-      alertCount++;
-    }
-
-    if (battery >= 0 && battery < 20) {
-      await maybeAlert("battery", `Battery critically low: ${battery}%`);
-    }
-    if (signal < 30) {
-      await maybeAlert("offline", `Weak LoRa signal: ${signal}% (RSSI ${bestRssi} dBm)`);
-    }
-
-    if (alertCount > 0) await alertsBatch.commit();
-
-    console.log(`[OK] ${helmetId}  lat=${doc.lat} lng=${doc.lng} bat=${battery}% sig=${signal}%`);
-    return res.status(200).json({ ok: true, helmetId, alertCount });
-  } catch (err) {
-    console.error("[ERR] Firestore write failed:", err);
-    return res.status(500).json({ error: "Internal error" });
-  }
-});
-
-// ─── LoRa P2P uplink endpoint (from receiver board) ──────────────────────────
-// Simpler format than ChirpStack — the receiver POSTs a flat JSON object.
+// ─── LoRa uplink endpoint (from receiver board) ──────────────────────────────
+// The receiver POSTs a flat JSON object; this is the only ingestion path.
 
 app.post("/lora-uplink", async (req, res) => {
   // 1) Validate per-receiver credential (D5) — replaces the old shared token.
@@ -346,33 +204,11 @@ app.post("/lora-uplink", async (req, res) => {
     const alertsBatch = db.batch();
     let alertCount = 0;
 
-    async function maybeAlert(kind, message) {
-      const cutoff = new Date(Date.now() - ALERT_COOLDOWN_MS);
-      const existing = await db.collection("alerts")
-        .where("helmetId", "==", helmetId)
-        .where("kind", "==", kind)
-        .where("resolved", "==", false)
-        .where("ts", ">=", cutoff)
-        .limit(1)
-        .get();
-      if (!existing.empty) return;
-      const alertRef = db.collection("alerts").doc();
-      alertsBatch.set(alertRef, {
-        helmetId,
-        worker: "",
-        kind,
-        message,
-        ts: now,
-        resolved: false,
-      });
-      alertCount++;
-    }
-
     if (battery >= 0 && battery < 20) {
-      await maybeAlert("battery", `Battery critically low: ${battery}%`);
+      if (await maybeAlert(alertsBatch, helmetId, "battery", `Battery critically low: ${battery}%`, now)) alertCount++;
     }
     if (signal < 30) {
-      await maybeAlert("offline", `Weak LoRa signal: ${signal}% (RSSI ${rssi} dBm)`);
+      if (await maybeAlert(alertsBatch, helmetId, "offline", `Weak LoRa signal: ${signal}% (RSSI ${rssi} dBm)`, now)) alertCount++;
     }
 
     if (alertCount > 0) await alertsBatch.commit();
@@ -385,15 +221,12 @@ app.post("/lora-uplink", async (req, res) => {
   }
 });
 
-// ─── Dev config endpoint (secret config page) ───────────────────────────────
-// Updates helmet fields (location, status, battery, etc.) directly.
+// ─── Dev config endpoint (admin dev tool) ────────────────────────────────────
+// Updates helmet fields (location, status, battery, etc.) directly. Gated by
+// the same requireAdmin role check as every other privileged route below —
+// no separate shared-secret trust model for this one dev tool.
 
-app.post("/dev-config", async (req, res) => {
-  const token = req.headers["x-webhook-token"] || "";
-  if (!WEBHOOK_SECRET || token !== WEBHOOK_SECRET) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
+app.post("/dev-config", requireAdmin, async (req, res) => {
   const { helmetId, lat, lng, status, battery, speed, heading, worker, keepAlive } = req.body;
   if (!helmetId) return res.status(400).json({ error: "Missing helmetId" });
 
@@ -575,31 +408,55 @@ app.post("/admin/helmets/provision", requireAdmin, async (req, res) => {
   }
 });
 
-// ─── Claim rate limiting (D12) ────────────────────────────────────────────────
-// Same in-memory-per-instance caveat as the receiver credential cache (D15):
-// bounded per function instance, not a perfect cross-instance guarantee in a
-// serverless deployment — but it's a real, documented bound, not nothing.
+// ─── Claim rate limiting (D10, D12) ──────────────────────────────────────────
+// Backed by a `rateLimits` Firestore collection so an attempt count survives
+// a Render restart/cold-start instead of living only in a Map that a
+// redeploy wipes. An in-memory cache sits in front and is synced to
+// Firestore only on a failed attempt or a cache miss — not on every claim
+// check — so this stays cheap relative to the Spark plan's write quota.
 const CLAIM_MAX_ATTEMPTS = 5;
 const CLAIM_LOCKOUT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const claimAttempts = new Map(); // uid -> { count, windowStart }
+const CLAIM_CACHE_TTL_MS = 30 * 1000; // 30 seconds
+const claimAttemptsCache = new Map(); // uid -> { count, windowStart, expiresAt }
 
-function isClaimRateLimited(uid) {
-  const entry = claimAttempts.get(uid);
-  if (!entry) return false;
-  if (Date.now() - entry.windowStart > CLAIM_LOCKOUT_WINDOW_MS) {
-    claimAttempts.delete(uid);
-    return false;
-  }
+function isExpiredWindow(entry) {
+  return !entry || Date.now() - entry.windowStart > CLAIM_LOCKOUT_WINDOW_MS;
+}
+
+async function getClaimAttemptRecord(uid) {
+  const cached = claimAttemptsCache.get(uid);
+  if (cached && cached.expiresAt > Date.now()) return cached;
+
+  const snap = await db.collection("rateLimits").doc(uid).get();
+  const record = snap.exists
+    ? { count: snap.data().count, windowStart: snap.data().windowStart.toMillis(), expiresAt: Date.now() + CLAIM_CACHE_TTL_MS }
+    : null;
+  if (record) claimAttemptsCache.set(uid, record);
+  return record;
+}
+
+async function isClaimRateLimited(uid) {
+  const entry = await getClaimAttemptRecord(uid);
+  if (isExpiredWindow(entry)) return false;
   return entry.count >= CLAIM_MAX_ATTEMPTS;
 }
 
-function recordClaimFailure(uid) {
-  const entry = claimAttempts.get(uid);
-  if (!entry || Date.now() - entry.windowStart > CLAIM_LOCKOUT_WINDOW_MS) {
-    claimAttempts.set(uid, { count: 1, windowStart: Date.now() });
-  } else {
-    entry.count++;
-  }
+async function recordClaimFailure(uid) {
+  const entry = await getClaimAttemptRecord(uid);
+  const next = isExpiredWindow(entry)
+    ? { count: 1, windowStart: Date.now() }
+    : { count: entry.count + 1, windowStart: entry.windowStart };
+
+  claimAttemptsCache.set(uid, { ...next, expiresAt: Date.now() + CLAIM_CACHE_TTL_MS });
+  await db.collection("rateLimits").doc(uid).set({
+    count: next.count,
+    windowStart: new Date(next.windowStart),
+  });
+}
+
+async function clearClaimAttempts(uid) {
+  claimAttemptsCache.delete(uid);
+  await db.collection("rateLimits").doc(uid).delete();
 }
 
 // ─── Helmet claim (D1, D2, D11, D12) ─────────────────────────────────────────
@@ -613,7 +470,7 @@ app.post("/helmets/:helmetId/claim", requireAuth, async (req, res) => {
   if (!pairingCode || typeof pairingCode !== "string") {
     return res.status(400).json({ error: "Missing pairingCode" });
   }
-  if (isClaimRateLimited(req.uid)) {
+  if (await isClaimRateLimited(req.uid)) {
     console.warn(`[CLAIM] uid=${req.uid} rate-limited`);
     return res.status(429).json({ error: "Too many failed attempts. Try again later." });
   }
@@ -643,12 +500,12 @@ app.post("/helmets/:helmetId/claim", requireAuth, async (req, res) => {
     });
 
     if (result.outcome === "claimed") {
-      claimAttempts.delete(req.uid);
+      await clearClaimAttempts(req.uid);
       console.log(`[CLAIM] ${helmetId} claimed by ${req.uid}`);
       return res.status(200).json({ ok: true, helmetId });
     }
 
-    recordClaimFailure(req.uid);
+    await recordClaimFailure(req.uid);
     if (result.outcome === "already_claimed") {
       return res.status(409).json({ error: "Helmet already claimed" });
     }
@@ -768,6 +625,5 @@ app.get("/health", (_req, res) => res.json({ status: "ok" }));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`[HELIX] Server running on port ${PORT}`);
-  console.log(`[HELIX] LoRa P2P endpoint:   POST /lora-uplink`);
-  console.log(`[HELIX] ChirpStack endpoint: POST /chirpstack-webhook`);
+  console.log(`[HELIX] LoRa uplink endpoint: POST /lora-uplink`);
 });

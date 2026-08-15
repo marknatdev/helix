@@ -23,6 +23,7 @@ class SettingsDialog extends StatelessWidget {
     final userEmail = context.select<AuthService, String?>(
       (a) => a.user?.email,
     );
+    final isAdmin = context.select<UserService, bool>((s) => s.isAdmin);
 
     return Dialog(
       backgroundColor: AppColors.card,
@@ -43,7 +44,7 @@ class SettingsDialog extends StatelessWidget {
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onDoubleTap: kDebugMode
+                  onDoubleTap: kDebugMode && isAdmin
                       ? () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -145,11 +146,8 @@ class SettingsDialog extends StatelessWidget {
               const Divider(color: AppColors.border, height: 20),
 
               // Admin: manage receivers — only visible to users with role == 'admin'.
-              Builder(builder: (ctx) {
-                final isAdmin =
-                    ctx.select<UserService, bool>((s) => s.isAdmin);
-                if (!isAdmin) return const SizedBox.shrink();
-                return Column(
+              if (isAdmin)
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const _SectionLabel('Admin'),
@@ -168,8 +166,7 @@ class SettingsDialog extends StatelessWidget {
                     ),
                     const Divider(color: AppColors.border, height: 20),
                   ],
-                );
-              }),
+                ),
 
               // Acknowledge all
               _ActionTile(

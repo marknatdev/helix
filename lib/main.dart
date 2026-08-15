@@ -98,7 +98,7 @@ class CommandCenterPage extends StatefulWidget {
 }
 
 class _CommandCenterPageState extends State<CommandCenterPage> {
-  String? _selectedId = 'HLX-0187';
+  String? _selectedId;
   String _filter = 'all';
   String _tab = 'Live';
 

@@ -6,12 +6,14 @@ import 'package:provider/provider.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 
-/// Secret dev config page — access via the settings dialog (long-press version label).
+/// Dev config page — reached via the settings dialog (double-tap the title),
+/// gated on both kDebugMode and UserService.isAdmin so it's neither present
+/// in release builds nor reachable by a non-admin in a debug build.
 /// Lets you set helmet GPS position, status, battery, and toggle keep-alive
 /// for demo/test helmets like HLX-001 and HLX-002.
 ///
-/// Writes directly to Firestore with admin-like privileges by using the
-/// local webhook server's /dev-config endpoint.
+/// Writes directly to Firestore; allowed because firestore.rules lets any
+/// owner of a helmetId write its /helmets/{helmetId} doc.
 class DevConfigPage extends StatefulWidget {
   const DevConfigPage({super.key});
 
