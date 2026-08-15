@@ -152,6 +152,67 @@ function shouldWriteTelemetry(helmetId, status, alertWorthy) {
   return Date.now() - prior.at >= TELEMETRY_MIN_WRITE_INTERVAL_MS;
 }
 
+// ─── Zone geofence containment ─────────────────────────────────────────────
+// Zones are created/assigned by any signed-in owner (of the helmet being
+// assigned) via the /zones routes below — never written directly by clients
+// (firestore.rules locks the collection to server-only writes, matching the
+// helmets/alerts pattern). Each zone doc carries its own `assignedHelmetIds`
+// array (for the array-contains lookup below) and a `containment` map of
+// helmetId -> last-known inside/outside bool, so a containment *transition*
+// can be detected on the next uplink without a second collection.
+const ZONE_CACHE_TTL_MS = 30 * 1000; // matches RECEIVER_CACHE_TTL_MS/claim cache
+const zoneAssignmentsCache = new Map(); // helmetId -> { at, zones: [{id, ...data}] }
+
+async function getZoneAssignments(helmetId) {
+  const cached = zoneAssignmentsCache.get(helmetId);
+  if (cached && Date.now() - cached.at < ZONE_CACHE_TTL_MS) return cached.zones;
+
+  const snap = await db.collection("zones")
+    .where("assignedHelmetIds", "array-contains", helmetId)
+    .get();
+  const zones = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  zoneAssignmentsCache.set(helmetId, { at: Date.now(), zones });
+  return zones;
+}
+
+function haversineMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+/** Compute containment for every zone this helmet is assigned to. Returns
+ * whether any zone changed containment state (used to bypass the telemetry
+ * write throttle, same as a low-battery/weak-signal reading) plus the list
+ * of transitions to alert on and persist. Deliberately read-only — does NOT
+ * mutate the cached zone objects. The caller only commits transitions to
+ * Firestore after `shouldWriteTelemetry` clears and the write actually
+ * succeeds; mutating the cache here would mark a transition "seen" even if
+ * the uplink is throttled or the commit fails, permanently losing it for
+ * the rest of this cache entry's TTL. */
+async function checkGeofences(helmetId, lat, lng) {
+  const zones = await getZoneAssignments(helmetId);
+  const transitions = [];
+  for (const zone of zones) {
+    if (typeof zone.centerLat !== "number" || typeof zone.centerLng !== "number" ||
+        typeof zone.radiusM !== "number") continue;
+    const nowContained = haversineMeters(lat, lng, zone.centerLat, zone.centerLng) <= zone.radiusM;
+    const priorContained = (zone.containment || {})[helmetId];
+    if (priorContained === undefined) {
+      // First reading since assignment — record state, don't alert (we don't
+      // know which direction the helmet crossed the boundary, if at all).
+      transitions.push({ zoneId: zone.id, zoneName: zone.name, nowContained, silent: true });
+    } else if (priorContained !== nowContained) {
+      transitions.push({ zoneId: zone.id, zoneName: zone.name, nowContained, silent: false });
+    }
+  }
+  return { alertWorthy: transitions.some((t) => !t.silent), transitions };
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Convert RSSI (dBm, typically -30 to -120) into a 0-100 signal quality % */
@@ -221,13 +282,21 @@ app.post("/lora-uplink", async (req, res) => {
   const snr  = typeof body.snr  === "number" ? body.snr  : 0;
   const signal = rssiToPercent(rssi);
   const battery = typeof body.battery === "number" ? body.battery : -1;
+  const lat = typeof body.lat === "number" ? body.lat : 0;
+  const lng = typeof body.lng === "number" ? body.lng : 0;
 
   let status = "active";
   if (body.speed === 0) {
     status = "idle";
   }
 
-  const alertWorthy = (battery >= 0 && battery < 20) || signal < 30;
+  // Geofence containment must be checked before the throttle decision below —
+  // a zone-boundary crossing has to bypass the throttle the same way a
+  // low-battery/weak-signal reading does, or transitions up to
+  // TELEMETRY_MIN_WRITE_INTERVAL_MS old could go unwritten.
+  const geo = await checkGeofences(helmetId, lat, lng);
+
+  const alertWorthy = (battery >= 0 && battery < 20) || signal < 30 || geo.alertWorthy;
   if (!shouldWriteTelemetry(helmetId, status, alertWorthy)) {
     return res.status(200).json({ ok: true, helmetId, throttled: true });
   }
@@ -237,8 +306,8 @@ app.post("/lora-uplink", async (req, res) => {
 
   const doc = {
     helmetId,
-    lat: typeof body.lat === "number" ? body.lat : 0,
-    lng: typeof body.lng === "number" ? body.lng : 0,
+    lat,
+    lng,
     alt: typeof body.alt === "number" ? body.alt : 0,
     speed: typeof body.speed === "number" ? body.speed : 0,
     heading: typeof body.heading === "number" ? body.heading : 0,
@@ -266,8 +335,32 @@ app.post("/lora-uplink", async (req, res) => {
     if (signal < 30) {
       if (await maybeAlert(alertsBatch, helmetId, "offline", `Weak LoRa signal: ${signal}% (RSSI ${rssi} dBm)`, now)) alertCount++;
     }
+    for (const t of geo.transitions) {
+      alertsBatch.set(db.collection("zones").doc(t.zoneId), {
+        containment: { [helmetId]: t.nowContained },
+        updatedAt: now,
+      }, { merge: true });
+      if (!t.silent) {
+        const msg = t.nowContained
+          ? `Entered zone "${t.zoneName}"`
+          : `Exited zone "${t.zoneName}"`;
+        // NOTE: maybeAlert dedupes by (helmetId, kind, resolved:false,
+        // ts>=cooldown) only — it doesn't know about zoneId. A helmet
+        // crossing two zone boundaries in the same uplink will only get one
+        // "geofence" alert recorded; the second maybeAlert call below
+        // returns false as a (spurious) duplicate. Acceptable for a
+        // single-zone-per-helmet v1; revisit (add zoneId to the dedupe
+        // query, which needs a new composite index) if overlapping zone
+        // assignments become common.
+        if (await maybeAlert(alertsBatch, helmetId, "geofence", msg, now)) alertCount++;
+      }
+    }
 
-    if (alertCount > 0) await alertsBatch.commit();
+    if (alertCount > 0 || geo.transitions.length > 0) await alertsBatch.commit();
+    // Cache held the pre-transition containment map; drop it so the next
+    // uplink re-reads the just-committed state from Firestore instead of
+    // re-detecting the same transition as "still pending".
+    if (geo.transitions.length > 0) zoneAssignmentsCache.delete(helmetId);
 
     console.log(`[P2P] ${helmetId}  lat=${doc.lat} lng=${doc.lng} bat=${battery}% sig=${signal}% rssi=${rssi}`);
     return res.status(200).json({ ok: true, helmetId, alertCount });
@@ -606,6 +699,159 @@ app.post("/helmets/:helmetId/unclaim", requireAuth, async (req, res) => {
     return res.status(404).json({ error: "Helmet not found" });
   } catch (err) {
     console.error("[UNCLAIM] Error:", err.message);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// ─── Zones (geofence containment) ────────────────────────────────────────────
+// Any signed-in user may create a zone and assign/unassign it to helmets they
+// own — firestore.rules locks the `zones` collection to server-only writes
+// (read: isAuthed(), same as `alerts`), so every mutation goes through here
+// with Admin SDK rather than a client-writable rule, even though the
+// permission model itself ("any owner") is permissive.
+
+app.post("/zones", requireAuth, async (req, res) => {
+  const { name, kind, centerLat, centerLng, radiusM } = req.body || {};
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({ error: "Missing name" });
+  }
+  if (typeof centerLat !== "number" || typeof centerLng !== "number") {
+    return res.status(400).json({ error: "Missing centerLat/centerLng" });
+  }
+  if (typeof radiusM !== "number" || radiusM <= 0) {
+    return res.status(400).json({ error: "radiusM must be a positive number" });
+  }
+  try {
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    const zoneRef = db.collection("zones").doc();
+    await zoneRef.set({
+      name,
+      kind: typeof kind === "string" && kind ? kind : "operational",
+      centerLat,
+      centerLng,
+      radiusM,
+      assignedHelmetIds: [],
+      containment: {},
+      createdBy: req.uid,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return res.status(200).json({ ok: true, zoneId: zoneRef.id });
+  } catch (err) {
+    console.error("[ZONES] create error:", err.message);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+app.patch("/zones/:zoneId", requireAuth, async (req, res) => {
+  const { zoneId } = req.params;
+  const { name, kind, centerLat, centerLng, radiusM } = req.body || {};
+  try {
+    const zoneRef = db.collection("zones").doc(zoneId);
+    const zoneSnap = await zoneRef.get();
+    if (!zoneSnap.exists) return res.status(404).json({ error: "Zone not found" });
+    if (zoneSnap.data().createdBy !== req.uid) {
+      const userSnap = await db.collection("users").doc(req.uid).get();
+      if (!userSnap.exists || userSnap.data().role !== "admin") {
+        return res.status(403).json({ error: "Only the zone's creator or an admin may edit it" });
+      }
+    }
+    const patch = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+    if (typeof name === "string" && name) patch.name = name;
+    if (typeof kind === "string" && kind) patch.kind = kind;
+    if (typeof centerLat === "number") patch.centerLat = centerLat;
+    if (typeof centerLng === "number") patch.centerLng = centerLng;
+    if (typeof radiusM === "number" && radiusM > 0) patch.radiusM = radiusM;
+    await zoneRef.update(patch);
+    return res.status(200).json({ ok: true, zoneId });
+  } catch (err) {
+    console.error("[ZONES] update error:", err.message);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+app.post("/zones/:zoneId/delete", requireAuth, async (req, res) => {
+  const { zoneId } = req.params;
+  try {
+    const zoneRef = db.collection("zones").doc(zoneId);
+    const zoneSnap = await zoneRef.get();
+    if (!zoneSnap.exists) return res.status(404).json({ error: "Zone not found" });
+    if (zoneSnap.data().createdBy !== req.uid) {
+      const userSnap = await db.collection("users").doc(req.uid).get();
+      if (!userSnap.exists || userSnap.data().role !== "admin") {
+        return res.status(403).json({ error: "Only the zone's creator or an admin may delete it" });
+      }
+    }
+    await zoneRef.delete();
+    return res.status(200).json({ ok: true, zoneId });
+  } catch (err) {
+    console.error("[ZONES] delete error:", err.message);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// A caller may only assign/unassign helmets they themselves have claimed —
+// mirrors the ownership check in /helmets/:helmetId/unclaim above.
+async function assertOwnsHelmet(req, res, helmetId) {
+  const helmetSnap = await db.collection("helmets").doc(helmetId).get();
+  if (!helmetSnap.exists) {
+    res.status(404).json({ error: "Helmet not found" });
+    return false;
+  }
+  if (helmetSnap.data().claimedByUid !== req.uid) {
+    res.status(403).json({ error: "You do not own this helmet" });
+    return false;
+  }
+  return true;
+}
+
+app.post("/zones/:zoneId/assign", requireAuth, async (req, res) => {
+  const { zoneId } = req.params;
+  const { helmetId } = req.body || {};
+  if (!helmetId || typeof helmetId !== "string") {
+    return res.status(400).json({ error: "Missing helmetId" });
+  }
+  try {
+    if (!(await assertOwnsHelmet(req, res, helmetId))) return;
+    const zoneRef = db.collection("zones").doc(zoneId);
+    const zoneSnap = await zoneRef.get();
+    if (!zoneSnap.exists) return res.status(404).json({ error: "Zone not found" });
+    await zoneRef.update({
+      assignedHelmetIds: admin.firestore.FieldValue.arrayUnion(helmetId),
+      // Clear any stale containment reading from a prior assignment — without
+      // this, a re-assign after unassign would compare the next uplink
+      // against old state instead of treating it as a first reading.
+      [`containment.${helmetId}`]: admin.firestore.FieldValue.delete(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    zoneAssignmentsCache.delete(helmetId); // force a fresh read on next uplink
+    return res.status(200).json({ ok: true, zoneId, helmetId });
+  } catch (err) {
+    console.error("[ZONES] assign error:", err.message);
+    return res.status(500).json({ error: "Internal error" });
+  }
+});
+
+app.post("/zones/:zoneId/unassign", requireAuth, async (req, res) => {
+  const { zoneId } = req.params;
+  const { helmetId } = req.body || {};
+  if (!helmetId || typeof helmetId !== "string") {
+    return res.status(400).json({ error: "Missing helmetId" });
+  }
+  try {
+    if (!(await assertOwnsHelmet(req, res, helmetId))) return;
+    const zoneRef = db.collection("zones").doc(zoneId);
+    const zoneSnap = await zoneRef.get();
+    if (!zoneSnap.exists) return res.status(404).json({ error: "Zone not found" });
+    await zoneRef.update({
+      assignedHelmetIds: admin.firestore.FieldValue.arrayRemove(helmetId),
+      [`containment.${helmetId}`]: admin.firestore.FieldValue.delete(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    zoneAssignmentsCache.delete(helmetId);
+    return res.status(200).json({ ok: true, zoneId, helmetId });
+  } catch (err) {
+    console.error("[ZONES] unassign error:", err.message);
     return res.status(500).json({ error: "Internal error" });
   }
 });

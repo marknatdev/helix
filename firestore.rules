@@ -68,6 +68,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Zone geofences (POST /zones etc. in functions/index.js). Any signed-in
+    // user may create/assign a zone, but only via the backend's ownership
+    // checks — never a direct client write, same reasoning as `alerts`.
+    match /zones/{zoneId} {
+      allow read: if isAuthed();
+      allow write: if false;
+    }
+
     // Receiver gateways (D3). Admins may read the non-sensitive record;
     // provisioning/revocation only happens via Admin SDK (functions/index.js).
     match /receivers/{receiverId} {
