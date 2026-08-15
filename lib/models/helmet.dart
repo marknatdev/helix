@@ -4,6 +4,20 @@ import '../theme/app_theme.dart';
 
 enum HelmetStatus { active, idle, sos, offline }
 
+HelmetStatus parseHelmetStatus(String s) {
+  switch (s) {
+    case 'active':
+      return HelmetStatus.active;
+    case 'idle':
+      return HelmetStatus.idle;
+    case 'sos':
+      return HelmetStatus.sos;
+    case 'offline':
+    default:
+      return HelmetStatus.offline;
+  }
+}
+
 String statusLabel(HelmetStatus s) {
   switch (s) {
     case HelmetStatus.active:
@@ -93,7 +107,7 @@ class Helmet {
       worker: d['worker'] as String? ?? '',
       role: d['role'] as String? ?? '',
       crew: d['crew'] as String? ?? '',
-      status: _parseStatus(d['status'] as String? ?? 'offline'),
+      status: parseHelmetStatus(d['status'] as String? ?? 'offline'),
       battery: (d['battery'] as num?)?.toDouble() ?? 0,
       signal: (d['signal'] as num?)?.toDouble() ?? 0,
       impactG: (d['impactG'] as num?)?.toDouble() ?? 0,
@@ -106,20 +120,6 @@ class Helmet {
       rssi: (d['rssi'] as num?)?.toDouble() ?? 0,
       snr: (d['snr'] as num?)?.toDouble() ?? 0,
     );
-  }
-
-  static HelmetStatus _parseStatus(String s) {
-    switch (s) {
-      case 'active':
-        return HelmetStatus.active;
-      case 'idle':
-        return HelmetStatus.idle;
-      case 'sos':
-        return HelmetStatus.sos;
-      case 'offline':
-      default:
-        return HelmetStatus.offline;
-    }
   }
 
   String get initials =>

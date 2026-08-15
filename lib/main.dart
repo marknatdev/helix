@@ -68,8 +68,13 @@ class _UserHelmetBridge extends ConsumerWidget {
     final userSvc = ref.read(userServiceProvider);
     if (uid != null) {
       userSvc.listen(uid);
+      final feed = ref.read(helmetFeedProvider);
+      ref.read(authServiceProvider).user!.getIdToken().then((token) {
+        feed.attachLiveTelemetry(uid, token);
+      });
     } else {
       userSvc.clear();
+      ref.read(helmetFeedProvider).attachLiveTelemetry(null, null);
     }
 
     // Push registered IDs into the feed whenever they change.

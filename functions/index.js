@@ -25,6 +25,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const crypto = require("crypto");
+const { WebSocketServer } = require("ws");
 
 // ─── Firebase Admin init ──────────────────────────────────────────────────────
 function loadCredential() {
@@ -213,6 +214,43 @@ async function checkGeofences(helmetId, lat, lng) {
   return { alertWorthy: transitions.some((t) => !t.silent), transitions };
 }
 
+// ─── Live telemetry WebSocket (bypasses the Firestore round-trip) ───────────
+// The Firestore write above is throttled for write-quota reasons, but that
+// throttle only needs to gate *persistence* — the live dashboard doesn't
+// need every reading persisted, just to see it. Each connected client gets
+// every uplink for helmets it's allowed to see, broadcast immediately on
+// receipt, independent of whether this particular reading gets written to
+// Firestore. Firestore remains the source of truth for history/alerts; this
+// is purely a lower-latency overlay for live position/vitals.
+//
+// Auth: a client connects with `?token=<Firebase ID token>` on the /live
+// path. The token is verified once at connect time and the resulting
+// helmetIds/admin status are cached on the connection for its lifetime — a
+// helmet claimed/unclaimed after connecting won't be reflected until the
+// client reconnects (acceptable: the Flutter client reconnects whenever its
+// own helmetIds change, see live_telemetry_service.dart).
+const liveClients = new Set(); // { ws, helmetIds: Set<string>, isAdmin: bool }
+
+async function authenticateLiveClient(token) {
+  const decoded = await admin.auth().verifyIdToken(token);
+  const userSnap = await db.collection("users").doc(decoded.uid).get();
+  const data = userSnap.data() || {};
+  return {
+    uid: decoded.uid,
+    isAdmin: data.role === "admin",
+    helmetIds: new Set(Array.isArray(data.helmetIds) ? data.helmetIds : []),
+  };
+}
+
+function broadcastLiveTelemetry(payload) {
+  const message = JSON.stringify({ type: "telemetry", ...payload });
+  for (const client of liveClients) {
+    if (client.ws.readyState !== client.ws.OPEN) continue;
+    if (!client.isAdmin && !client.helmetIds.has(payload.helmetId)) continue;
+    client.ws.send(message);
+  }
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Convert RSSI (dBm, typically -30 to -120) into a 0-100 signal quality % */
@@ -295,6 +333,24 @@ app.post("/lora-uplink", async (req, res) => {
   // low-battery/weak-signal reading does, or transitions up to
   // TELEMETRY_MIN_WRITE_INTERVAL_MS old could go unwritten.
   const geo = await checkGeofences(helmetId, lat, lng);
+
+  // Broadcast to live-connected dashboards immediately — before the
+  // Firestore throttle decision below, since live display shouldn't wait on
+  // (or be limited by) persistence cadence.
+  broadcastLiveTelemetry({
+    helmetId,
+    lat,
+    lng,
+    alt: typeof body.alt === "number" ? body.alt : 0,
+    speed: typeof body.speed === "number" ? body.speed : 0,
+    heading: typeof body.heading === "number" ? body.heading : 0,
+    battery,
+    signal,
+    rssi,
+    snr,
+    satellites: typeof body.satellites === "number" ? body.satellites : 0,
+    status,
+  });
 
   const alertWorthy = (battery >= 0 && battery < 20) || signal < 30 || geo.alertWorthy;
   if (!shouldWriteTelemetry(helmetId, status, alertWorthy)) {
@@ -925,7 +981,30 @@ app.get("/health", (_req, res) => res.json({ status: "ok" }));
 // ─── Start server ───────────────────────────────────────────────────────────
 // Render sets PORT itself; local dev falls back to 3000.
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`[HELIX] Server running on port ${PORT}`);
   console.log(`[HELIX] LoRa uplink endpoint: POST /lora-uplink`);
+  console.log(`[HELIX] Live telemetry WebSocket: /live?token=<Firebase ID token>`);
+});
+
+const wss = new WebSocketServer({ server, path: "/live" });
+wss.on("connection", async (ws, req) => {
+  const url = new URL(req.url, "http://localhost");
+  const token = url.searchParams.get("token");
+  if (!token) {
+    ws.close(4401, "Missing token");
+    return;
+  }
+  let client;
+  try {
+    const auth = await authenticateLiveClient(token);
+    client = { ws, ...auth };
+  } catch (err) {
+    console.warn("[LIVE] WebSocket auth failed:", err.message);
+    ws.close(4401, "Invalid token");
+    return;
+  }
+  liveClients.add(client);
+  ws.on("close", () => liveClients.delete(client));
+  ws.on("error", () => liveClients.delete(client));
 });
