@@ -2,21 +2,17 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'live_clock.dart';
 
-const List<String> kHelixTabs = ['Live', 'Fleet', 'Incidents', 'Zones', 'Reports'];
-
 class CommandHeader extends StatelessWidget {
   final String siteName;
   final int sosCount;
-  final String activeTab;
-  final ValueChanged<String> onTabChange;
   final VoidCallback onOpenSettings;
+  final VoidCallback onAddHelmet;
   const CommandHeader({
     super.key,
     required this.siteName,
     required this.sosCount,
-    required this.activeTab,
-    required this.onTabChange,
     required this.onOpenSettings,
+    required this.onAddHelmet,
   });
 
   @override
@@ -62,55 +58,6 @@ class CommandHeader extends StatelessWidget {
                   )),
             ],
           ),
-          if (wide) ...[
-            const SizedBox(width: 16),
-            Container(width: 1, height: 24, color: AppColors.border),
-            const SizedBox(width: 8),
-            for (final e in kHelixTabs)
-              _NavItem(
-                label: e,
-                active: e == activeTab,
-                onTap: () => onTabChange(e),
-              ),
-          ] else ...[
-            const SizedBox(width: 8),
-            PopupMenuButton<String>(
-              onSelected: onTabChange,
-              icon: const Icon(Icons.menu, size: 20, color: AppColors.mutedFg),
-              tooltip: 'Navigation',
-              color: AppColors.popover,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: const BorderSide(color: AppColors.border),
-              ),
-              itemBuilder: (_) => kHelixTabs
-                  .map((e) => PopupMenuItem(
-                        value: e,
-                        child: Row(children: [
-                          if (e == activeTab)
-                            Container(
-                              width: 4,
-                              height: 16,
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            )
-                          else
-                            const SizedBox(width: 12),
-                          Text(e,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: e == activeTab
-                                    ? AppColors.foreground
-                                    : AppColors.mutedFg,
-                              )),
-                        ]),
-                      ))
-                  .toList(),
-            ),
-          ],
           const Spacer(),
           if (wide) ...[
             _Badge(
@@ -131,6 +78,8 @@ class CommandHeader extends StatelessWidget {
             const LiveClock(),
           ],
 
+          const SizedBox(width: 8),
+          _AddHelmetButton(onTap: onAddHelmet, compact: !wide),
           IconButton(
             onPressed: onOpenSettings,
             icon: const Icon(Icons.settings_outlined, size: 18),
@@ -143,35 +92,35 @@ class CommandHeader extends StatelessWidget {
   }
 }
 
-class _NavItem extends StatelessWidget {
-  final String label;
-  final bool active;
+class _AddHelmetButton extends StatelessWidget {
   final VoidCallback onTap;
-  const _NavItem({
-    required this.label,
-    required this.onTap,
-    this.active = false,
-  });
+  final bool compact;
+  const _AddHelmetButton({required this.onTap, required this.compact});
   @override
   Widget build(BuildContext context) {
+    if (compact) {
+      return IconButton(
+        onPressed: onTap,
+        icon: const Icon(Icons.add, size: 18),
+        color: AppColors.mutedFg,
+        tooltip: 'Add helmet',
+      );
+    }
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: active
-            ? BoxDecoration(
-                color: AppColors.accent,
-                border: Border.all(color: AppColors.border),
-                borderRadius: BorderRadius.circular(6),
-              )
-            : null,
-        child: Text(label,
-            style: TextStyle(
-              fontSize: 13,
-              color: active ? AppColors.foreground : AppColors.mutedFg,
-            )),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.accent,
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.add, size: 14, color: AppColors.foreground),
+          SizedBox(width: 6),
+          Text('Add helmet', style: TextStyle(fontSize: 12)),
+        ]),
       ),
     );
   }
