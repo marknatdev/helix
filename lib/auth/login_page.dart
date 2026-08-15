@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 import '../state/providers.dart';
 import '../theme/app_theme.dart';
@@ -226,7 +226,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     Center(
                       child: InkWell(
                         onTap: () {
-                          html.window.open('/ppl/', '_blank');
+                          web.window.open('/ppl/', '_blank');
                         },
                         child: const Text(
                           'Privacy Policy',

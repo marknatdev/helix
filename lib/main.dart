@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 import 'auth/auth_gate.dart';
 import 'firebase_options.dart';
@@ -181,7 +181,7 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
               ),
               InkWell(
                 onTap: () {
-                  html.window.open('/ppl/', '_blank');
+                  web.window.open('/ppl/', '_blank');
                 },
                 child: const Text(
                   'Privacy Policy',
