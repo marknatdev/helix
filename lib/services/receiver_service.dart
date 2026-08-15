@@ -27,9 +27,13 @@ class ReceiverService extends ChangeNotifier {
         Future.value(null);
   }
 
-  /// Provisions a new Receiver. Returns the raw credential — shown to the
-  /// caller exactly once; it is never stored and cannot be retrieved again.
-  Future<String> provisionReceiver({
+  /// Provisions a new Receiver. Returns its receiverId and raw credential —
+  /// the credential is shown to the caller exactly once; it is never stored
+  /// and cannot be retrieved again. receiverId isn't secret (readable by any
+  /// admin via firestore.rules `allow read: if isAdmin()`), just otherwise
+  /// invisible in the UI, so it's returned too rather than only the
+  /// credential.
+  Future<(String receiverId, String credential)> provisionReceiver({
     required String hardwareId,
     String? label,
   }) async {
@@ -49,7 +53,7 @@ class ReceiverService extends ChangeNotifier {
     if (res.statusCode != 200) {
       throw StateError(body['error'] as String? ?? 'Provisioning failed');
     }
-    return body['credential'] as String;
+    return (body['receiverId'] as String, body['credential'] as String);
   }
 
   Future<void> revokeReceiver(String receiverId) async {
