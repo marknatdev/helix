@@ -1,0 +1,63 @@
+{
+  "specName": "spec-data-flow-simulator",
+  "timestamp": "2026-08-15T00:00:00Z",
+  "status": "finalized",
+  "capturedAtCommit": "9a7c48e",
+  "sourceIssue": null,
+  "previewUrl": "https://claude.ai/code/artifact/1c6ddc98-85e2-46d8-976d-f08ef1a52eae",
+  "redTeamStatus": "skipped",
+  "redTeamFindings": null,
+  "baseline": {
+    "derivedFrom": "Explore agent codebase scan (functions/index.js, firmware/receiver/receiver.ino, firmware/sender/sender.ino, lib/views/dev_config_page.dart) at commit 9a7c48e",
+    "capturedAtCommit": "9a7c48e",
+    "claims": [
+      { "area": "Simulation Method", "claim": "POST /lora-uplink requires X-Receiver-Id/X-Receiver-Credential headers verified via SHA-256 against receivers/{id}/private/credential.credentialVerifier", "evidence": "functions/index.js verifyReceiver, ~L90-110" },
+      { "area": "Simulation Method", "claim": "Body fields consumed: helmetId (required), lat, lng, alt, speed, heading, battery, rssi, snr, satellites (all optional numeric with defaults)", "evidence": "functions/index.js /lora-uplink handler, ~L258-371" },
+      { "area": "Simulation Method", "claim": "status is derived only as speed===0 ? 'idle' : 'active'; no SOS path exists in /lora-uplink", "evidence": "functions/index.js ~L288-291" },
+      { "area": "Cadence & Runtime", "claim": "Real sender firmware transmits every TX_INTERVAL_S=10 seconds", "evidence": "firmware/sender/config.h L56" },
+      { "area": "Movement Model", "claim": "sender.ino contains a fake-GPS random-walk generator stepFakeGps() (heading jitter + constant speed) used when USE_REAL_GPS is false", "evidence": "firmware/sender/sender.ino ~L71-83" },
+      { "area": "Fleet & Identity", "claim": "helmetExists() only requires prior provisioning via /admin/helmets/provision; claimed status is irrelevant to ingestion", "evidence": "functions/index.js helmetExists, ~L125-133" },
+      { "area": "Environment Safety", "claim": "No staging Firebase project exists; only production smhelmet-67 / helix-webhook.onrender.com are deployed", "evidence": "render.yaml, lib/services/admin_api.dart adminApiBaseUrl" },
+      { "area": "Prior Art", "claim": "A prior simulator/ existed (Python http.server + static Leaflet index.html, single shared X-Webhook-Token auth, single helmet) and was deleted in commit f9492d2", "evidence": "git show f9492d2 --stat -- simulator/; git show f9492d2^:simulator/README.md" }
+    ]
+  },
+  "coverageMap": {
+    "Problem": "done",
+    "Simulation Method": "done",
+    "Fleet & Identity": "done",
+    "Movement Model": "done",
+    "Cadence & Runtime": "done",
+    "Scenario Coverage": "done",
+    "App Structure/Interface": "done",
+    "Web UI Design": "done",
+    "Environment Safety": "done",
+    "Persistence & Cleanup": "done",
+    "Tech Stack": "done"
+  },
+  "qaLog": [
+    { "area": "Problem", "question": "What's this simulator actually for?", "answer": "Manual QA / demo tool", "options": ["Manual QA / demo tool", "Automated test fixture", "Load/soak testing"] },
+    { "area": "Simulation Method", "question": "Confirming: should the simulator POST to the real /lora-uplink endpoint with receiver credentials rather than the Firestore-direct shortcut?", "answer": "Yes, real /lora-uplink path", "options": ["Yes, real /lora-uplink path (recommended)", "Extend the existing Firestore-direct shortcut"] },
+    { "area": "Simulation Method", "question": "Since there's no LoRa radio involved, what should the simulator actually stand in for?", "answer": "A virtual receiver", "options": ["A virtual receiver (recommended)", "Multiple virtual senders behind one virtual receiver"] },
+    { "area": "Fleet & Identity", "question": "How many helmets should the simulator run at once, and how do they get identity/credentials?", "answer": "make me can config every parts also smart helmet's data (free text)", "options": ["Single helmet, fixed test ID (recommended)", "Configurable N helmets, one shared receiver", "Configurable N helmets, each with its own receiver"] },
+    { "area": "Fleet & Identity", "question": "Should receiver-credential mapping support both shared-receiver and per-helmet-receiver setups, selectable per run?", "answer": "Configurable either way", "options": ["Configurable either way (recommended)", "Always one shared receiver per run"] },
+    { "area": "Movement Model", "question": "What's the baseline generation model for movement/telemetry?", "answer": "Both, selectable per helmet", "options": ["Random walk, like sender.ino's stepFakeGps() (recommended)", "Scripted route (waypoint list)", "Both, selectable per helmet"] },
+    { "area": "Cadence & Runtime", "question": "Uplink cadence and run duration — configurable interval, how does a run start/stop?", "answer": "Configurable interval, runs until stopped", "options": ["Configurable interval, runs until stopped (recommended)", "Configurable interval + fixed duration/tick count"] },
+    { "area": "Scenario Coverage", "question": "Should the simulator have first-class scenario presets for triggering alerts, or manual config only?", "answer": "Manual config only", "options": ["First-class scenario presets (recommended)", "Manual config only"] },
+    { "area": "Scenario Coverage", "question": "Since /lora-uplink has no real path to SOS status, should the simulator leave SOS out entirely or add an override field?", "answer": "Leave SOS out entirely", "options": ["Leave SOS out entirely (recommended)", "Add an explicit status override field"] },
+    { "area": "App Structure/Interface", "question": "How should you configure and run the simulator?", "answer": "spilt out to be another app (free text)", "options": ["Standalone Node script + config file (recommended)", "CLI with flags, no config file", "In-app admin UI (Flutter dev tool)"] },
+    { "area": "App Structure/Interface", "question": "What should 'split out to be another app' look like structurally?", "answer": "New folder in this repo", "options": ["New folder in this repo (recommended)", "Separate standalone repo entirely"] },
+    { "area": "App Structure/Interface", "question": "Still a CLI/config-file tool, or its own UI?", "answer": "Own local web UI", "options": ["CLI + config file (recommended)", "Own local web UI"] },
+    { "area": "Web UI Design", "question": "What does someone need to see/do while a simulation is running?", "answer": "Live status table, live map view, raw request/response log, plus which account/receiver each helmet sends under (free text addition)", "options": ["Live status table per helmet", "Live map view", "Raw request/response log"] },
+    { "area": "Web UI Design", "question": "How should config building work in the web UI?", "answer": "Both (form builder + raw JSON editor)", "options": ["Form-based builder + save/load JSON (recommended)", "Raw JSON editor in-browser", "Both"] },
+    { "area": "Environment Safety", "question": "How should the simulator get receiver credentials and provisioned helmet IDs?", "answer": "Simulator provisions its own via admin login", "options": ["Paste in pre-provisioned values (recommended)", "Simulator provisions its own via admin login"] },
+    { "area": "Environment Safety", "question": "PUSHBACK: given no staging environment, should the simulator be restricted to a separate Firebase project, or accept holding admin credentials against production?", "answer": "I think forget about admin auth system and make it standalone run on pc (free text — reversed prior answer)", "options": ["Require a separate Firebase project (recommended)", "Point at production, but namespace simulated data clearly", "Point at production, no special handling"] },
+    { "area": "Tech Stack", "question": "What should the simulator app's own local web UI be built with?", "answer": "Node/Express + plain HTML/JS + WebSocket", "options": ["Node/Express + plain HTML/JS + WebSocket (recommended)", "Node/Express + a frontend framework (React/Vite)"] },
+    { "area": "Persistence & Cleanup", "question": "Should there be any cleanup/teardown story for simulated Firestore docs?", "answer": "Manual cleanup only", "options": ["Manual cleanup only (recommended)", "Simulator prints a cleanup checklist on stop"] }
+  ],
+  "decisionsLog": [
+    { "id": "D14", "topic": "Credentials setup", "note": "Recorded as a reversal: interview initially chose 'simulator provisions its own via admin login', then reversed after active pushback on the production-admin-credential risk (no staging environment exists)." }
+  ],
+  "feedbackRounds": [
+    { "round": 1, "feedback": "agreed with this plan", "changes": "none — approved as previewed" }
+  ]
+}

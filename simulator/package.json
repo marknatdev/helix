@@ -1,0 +1,16 @@
+{
+  "name": "helix-simulator",
+  "description": "Standalone local web app that impersonates a real HELIX LoRa receiver, POSTing configurable virtual-helmet telemetry to the real /lora-uplink endpoint. See ../spec-data-flow-simulator.md.",
+  "engines": {
+    "node": "22"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.18.0"
+  },
+  "private": true
+}
