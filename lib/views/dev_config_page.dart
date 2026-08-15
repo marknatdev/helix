@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import '../services/user_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../state/providers.dart';
 import '../theme/app_theme.dart';
 
 /// Dev config page — reached via the settings dialog (double-tap the title),
@@ -14,14 +14,14 @@ import '../theme/app_theme.dart';
 ///
 /// Writes directly to Firestore; allowed because firestore.rules lets any
 /// owner of a helmetId write its /helmets/{helmetId} doc.
-class DevConfigPage extends StatefulWidget {
+class DevConfigPage extends ConsumerStatefulWidget {
   const DevConfigPage({super.key});
 
   @override
-  State<DevConfigPage> createState() => _DevConfigPageState();
+  ConsumerState<DevConfigPage> createState() => _DevConfigPageState();
 }
 
-class _DevConfigPageState extends State<DevConfigPage> {
+class _DevConfigPageState extends ConsumerState<DevConfigPage> {
   final _db = FirebaseFirestore.instance;
   List<Map<String, dynamic>> _helmets = [];
   String? _selectedId;
@@ -63,7 +63,7 @@ class _DevConfigPageState extends State<DevConfigPage> {
   Future<void> _loadHelmets() async {
     setState(() => _loading = true);
     try {
-      final userSvc = context.read<UserService>();
+      final userSvc = ref.read(userServiceProvider);
       final ids = userSvc.helmetIds;
       if (ids.isEmpty) {
         _helmets = [];

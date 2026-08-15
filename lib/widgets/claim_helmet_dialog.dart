@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/user_service.dart';
+import '../state/providers.dart';
 import '../theme/app_theme.dart';
 
 /// Dialog for claiming a helmet by its pairing code (see
 /// spec-device-pairing-system.md) and releasing helmets already claimed.
 /// Replaces the old free-text RegisterHelmetDialog — claiming now requires
 /// server-side proof of ownership instead of typing an arbitrary ID.
-class ClaimHelmetDialog extends StatefulWidget {
+class ClaimHelmetDialog extends ConsumerStatefulWidget {
   const ClaimHelmetDialog({super.key});
 
   @override
-  State<ClaimHelmetDialog> createState() => _ClaimHelmetDialogState();
+  ConsumerState<ClaimHelmetDialog> createState() => _ClaimHelmetDialogState();
 }
 
-class _ClaimHelmetDialogState extends State<ClaimHelmetDialog> {
+class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
   final _idController = TextEditingController();
   final _codeController = TextEditingController();
   String? _error;
@@ -33,8 +33,8 @@ class _ClaimHelmetDialogState extends State<ClaimHelmetDialog> {
       _error = null;
     });
     try {
-      await context
-          .read<UserService>()
+      await ref
+          .read(userServiceProvider)
           .claimHelmet(helmetId: id, pairingCode: code);
       _idController.clear();
       _codeController.clear();
@@ -50,7 +50,7 @@ class _ClaimHelmetDialogState extends State<ClaimHelmetDialog> {
   }
 
   Future<void> _release(String id) async {
-    final svc = context.read<UserService>();
+    final svc = ref.read(userServiceProvider);
     try {
       await svc.unclaimHelmet(id);
     } catch (e) {
@@ -71,7 +71,7 @@ class _ClaimHelmetDialogState extends State<ClaimHelmetDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final ids = context.select<UserService, List<String>>((s) => s.helmetIds);
+    final ids = ref.watch(userServiceProvider.select((s) => s.helmetIds));
 
     return Dialog(
       backgroundColor: AppColors.card,
