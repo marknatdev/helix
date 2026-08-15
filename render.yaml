@@ -10,11 +10,8 @@ services:
       - key: NODE_VERSION
         value: 22
       # Secrets — set these manually in the Render dashboard, never in this file:
-      #   CHIRPSTACK_WEBHOOK_SECRET       shared secret for /chirpstack-webhook and /dev-config
       #   ADMIN_BOOTSTRAP_SECRET          one-time admin bootstrap secret (see functions/index.js)
       #   GOOGLE_APPLICATION_CREDENTIALS_JSON   the smhelmet-67 service-account key, as JSON text
-      - key: CHIRPSTACK_WEBHOOK_SECRET
-        sync: false
       - key: ADMIN_BOOTSTRAP_SECRET
         sync: false
       - key: GOOGLE_APPLICATION_CREDENTIALS_JSON

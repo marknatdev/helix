@@ -1,14 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:html' as html;
 
 import 'auth/auth_gate.dart';
-import 'auth/auth_service.dart';
 import 'firebase_options.dart';
 import 'models/helmet.dart';
-import 'services/user_service.dart';
 import 'state/helmet_feed.dart';
+import 'state/providers.dart';
 import 'theme/app_theme.dart';
 import 'views/fleet_view.dart';
 import 'views/incidents_view.dart';
@@ -39,25 +38,18 @@ Future<void> main() async {
     ));
     return;
   }
-  runApp(const HelixApp());
+  runApp(const ProviderScope(child: HelixApp()));
 }
 
 class HelixApp extends StatelessWidget {
   const HelixApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthService()),
-        ChangeNotifierProvider(create: (_) => UserService()),
-        ChangeNotifierProvider(create: (_) => HelmetFeed()),
-      ],
-      child: MaterialApp(
-        title: 'HELIX · Smart Helmet Command Center',
-        debugShowCheckedModeBanner: false,
-        theme: buildAppTheme(),
-        home: const AuthGate(child: _UserHelmetBridge()),
-      ),
+    return MaterialApp(
+      title: 'HELIX · Smart Helmet Command Center',
+      debugShowCheckedModeBanner: false,
+      theme: buildAppTheme(),
+      home: const AuthGate(child: _UserHelmetBridge()),
     );
   }
 }
@@ -65,18 +57,13 @@ class HelixApp extends StatelessWidget {
 /// Bridges AuthService → UserService → HelmetFeed.
 /// When a user signs in, starts the UserService listener. When the user's
 /// registered helmetIds change, pushes them into HelmetFeed.
-class _UserHelmetBridge extends StatefulWidget {
+class _UserHelmetBridge extends ConsumerWidget {
   const _UserHelmetBridge();
   @override
-  State<_UserHelmetBridge> createState() => _UserHelmetBridgeState();
-}
-
-class _UserHelmetBridgeState extends State<_UserHelmetBridge> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Start listening when user signs in.
-    final uid = context.select<AuthService, String?>((a) => a.user?.uid);
-    final userSvc = context.read<UserService>();
+    final uid = ref.watch(authServiceProvider.select((a) => a.user?.uid));
+    final userSvc = ref.read(userServiceProvider);
     if (uid != null) {
       userSvc.listen(uid);
     } else {
@@ -84,45 +71,35 @@ class _UserHelmetBridgeState extends State<_UserHelmetBridge> {
     }
 
     // Push registered IDs into the feed whenever they change.
-    final ids = context.select<UserService, List<String>>((s) => s.helmetIds);
-    context.read<HelmetFeed>().updateHelmetIds(ids);
+    final ids = ref.watch(userServiceProvider.select((s) => s.helmetIds));
+    ref.read(helmetFeedProvider).updateHelmetIds(ids);
 
     return const CommandCenterPage();
   }
 }
 
-class CommandCenterPage extends StatefulWidget {
+class CommandCenterPage extends ConsumerStatefulWidget {
   const CommandCenterPage({super.key});
   @override
-  State<CommandCenterPage> createState() => _CommandCenterPageState();
+  ConsumerState<CommandCenterPage> createState() => _CommandCenterPageState();
 }
 
-class _CommandCenterPageState extends State<CommandCenterPage> {
-  String? _selectedId = 'HLX-0187';
+class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
+  String? _selectedId;
   String _filter = 'all';
   String _tab = 'Live';
 
   void _openSettings() {
-    final feed = context.read<HelmetFeed>();
-    final auth = context.read<AuthService>();
-    final userSvc = context.read<UserService>();
     showDialog(
       context: context,
-      builder: (_) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: feed),
-          ChangeNotifierProvider.value(value: auth),
-          ChangeNotifierProvider.value(value: userSvc),
-        ],
-        child: const SettingsDialog(),
-      ),
+      builder: (_) => const SettingsDialog(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final feed = context.read<HelmetFeed>();
-    final helmets = context.select<HelmetFeed, List<Helmet>>((f) => f.helmets);
+    final feed = ref.read(helmetFeedProvider);
+    final helmets = ref.watch(helmetFeedProvider.select((f) => f.helmets));
     final selectedId = _selectedId;
     final selected = selectedId == null
         ? null
@@ -131,12 +108,12 @@ class _CommandCenterPageState extends State<CommandCenterPage> {
             orElse: () => Helmet.empty(),
           );
     final selectedSafe = selected is Helmet && selected.id.isNotEmpty ? selected : null;
-    final sosCount = context.select<HelmetFeed, int>(
+    final sosCount = ref.watch(helmetFeedProvider.select(
       (f) => f.helmets.where((h) => h.effectiveStatus == HelmetStatus.sos).length,
-    );
+    ));
 
-    final isLoading = context.select<HelmetFeed, bool>((f) => f.loading);
-    final streamError = context.select<HelmetFeed, String?>((f) => f.error);
+    final isLoading = ref.watch(helmetFeedProvider.select((f) => f.loading));
+    final streamError = ref.watch(helmetFeedProvider.select((f) => f.error));
 
     return Scaffold(
       body: Column(children: [
@@ -170,9 +147,9 @@ class _CommandCenterPageState extends State<CommandCenterPage> {
               IconButton(
                 onPressed: () {
                   // Re-trigger subscription to clear error
-                  final ids = context.read<UserService>().helmetIds;
-                  context.read<HelmetFeed>().updateHelmetIds([]);
-                  context.read<HelmetFeed>().updateHelmetIds(ids);
+                  final ids = ref.read(userServiceProvider).helmetIds;
+                  ref.read(helmetFeedProvider).updateHelmetIds([]);
+                  ref.read(helmetFeedProvider).updateHelmetIds(ids);
                 },
                 icon: const Icon(Icons.refresh, size: 16, color: Color(0xFFef4444)),
                 tooltip: 'Retry',

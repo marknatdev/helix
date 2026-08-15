@@ -1,28 +1,25 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_service.dart';
-import '../services/user_service.dart';
-import '../state/helmet_feed.dart';
+import '../state/providers.dart';
 import '../theme/app_theme.dart';
 import 'claim_helmet_dialog.dart';
 import '../views/dev_config_page.dart';
 import '../views/receiver_admin_page.dart';
 
-class SettingsDialog extends StatelessWidget {
+class SettingsDialog extends ConsumerWidget {
   const SettingsDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final feed = context.read<HelmetFeed>();
-    final auth = context.read<AuthService>();
-    final connected = context.select<HelmetFeed, bool>((f) => f.connected);
-    final helmetCount = context.select<HelmetFeed, int>((f) => f.helmets.length);
-    final streamError = context.select<HelmetFeed, String?>((f) => f.error);
-    final userEmail = context.select<AuthService, String?>(
-      (a) => a.user?.email,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final feed = ref.read(helmetFeedProvider);
+    final auth = ref.read(authServiceProvider);
+    final connected = ref.watch(helmetFeedProvider.select((f) => f.connected));
+    final helmetCount = ref.watch(helmetFeedProvider.select((f) => f.helmets.length));
+    final streamError = ref.watch(helmetFeedProvider.select((f) => f.error));
+    final userEmail = ref.watch(authServiceProvider.select((a) => a.user?.email));
+    final isAdmin = ref.watch(userServiceProvider.select((s) => s.isAdmin));
 
     return Dialog(
       backgroundColor: AppColors.card,
@@ -43,7 +40,7 @@ class SettingsDialog extends StatelessWidget {
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onDoubleTap: kDebugMode
+                  onDoubleTap: kDebugMode && isAdmin
                       ? () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -122,9 +119,9 @@ class SettingsDialog extends StatelessWidget {
               // Manage helmets
               const _SectionLabel('Helmets'),
               const SizedBox(height: 6),
-              Builder(builder: (ctx) {
+              Consumer(builder: (ctx, ref, _) {
                 final helmetIds =
-                    ctx.select<UserService, List<String>>((s) => s.helmetIds);
+                    ref.watch(userServiceProvider.select((s) => s.helmetIds));
                 return _ActionTile(
                   icon: Icons.construction,
                   title: 'Manage claimed helmets',
@@ -134,10 +131,7 @@ class SettingsDialog extends StatelessWidget {
                   onTap: () {
                     showDialog(
                       context: ctx,
-                      builder: (_) => ChangeNotifierProvider.value(
-                        value: ctx.read<UserService>(),
-                        child: const ClaimHelmetDialog(),
-                      ),
+                      builder: (_) => const ClaimHelmetDialog(),
                     );
                   },
                 );
@@ -145,11 +139,8 @@ class SettingsDialog extends StatelessWidget {
               const Divider(color: AppColors.border, height: 20),
 
               // Admin: manage receivers — only visible to users with role == 'admin'.
-              Builder(builder: (ctx) {
-                final isAdmin =
-                    ctx.select<UserService, bool>((s) => s.isAdmin);
-                if (!isAdmin) return const SizedBox.shrink();
-                return Column(
+              if (isAdmin)
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const _SectionLabel('Admin'),
@@ -168,8 +159,7 @@ class SettingsDialog extends StatelessWidget {
                     ),
                     const Divider(color: AppColors.border, height: 20),
                   ],
-                );
-              }),
+                ),
 
               // Acknowledge all
               _ActionTile(

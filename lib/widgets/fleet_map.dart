@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../data/helmet_data.dart';
 import '../models/helmet.dart';
 import '../theme/app_theme.dart';
 import '../utils/snackbars.dart';
+
+/// Default map center — the job site's approximate coordinates.
+const LatLng kSiteCenter = LatLng(37.7841, -122.4074);
 
 class FleetMap extends StatefulWidget {
   final List<Helmet> helmets;
