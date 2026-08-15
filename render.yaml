@@ -9,6 +9,12 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22
+      # Minimum ms between routine Firestore telemetry writes per helmet
+      # (status changes and low-battery/weak-signal readings always write
+      # immediately regardless). Tune down if quota headroom allows, up if
+      # the fleet grows and Spark's free daily write quota gets tight.
+      - key: TELEMETRY_MIN_WRITE_INTERVAL_MS
+        value: 30000
       # Secrets — set these manually in the Render dashboard, never in this file:
       #   ADMIN_BOOTSTRAP_SECRET          one-time admin bootstrap secret (see functions/index.js)
       #   GOOGLE_APPLICATION_CREDENTIALS_JSON   the smhelmet-67 service-account key, as JSON text

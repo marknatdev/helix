@@ -109,6 +109,49 @@ async function verifyReceiver(req) {
   return { ok: true, receiverId };
 }
 
+// ─── Known-helmet cache ───────────────────────────────────────────────────────
+// /lora-uplink used to `.set(doc, {merge:true})` on whatever helmetId the
+// request body contained, which silently creates a new Firestore doc (and
+// consumes a write) for any string — a leaked/rogue receiver credential
+// could spam-create arbitrary garbage helmets, and nothing tied the
+// telemetry to a helmet that was ever actually provisioned. Helmets must
+// now already exist (via /admin/helmets/provision, or the admin dev tool)
+// before they'll accept telemetry. Existence is cached in-memory with a TTL
+// to avoid a Firestore read on every uplink; a helmet that's provisioned
+// mid-cache-window just waits out the TTL before its first uplink lands.
+const KNOWN_HELMET_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const knownHelmets = new Map(); // helmetId -> expiresAt
+
+async function helmetExists(helmetId) {
+  const expiresAt = knownHelmets.get(helmetId);
+  if (expiresAt && expiresAt > Date.now()) return true;
+
+  const snap = await db.collection("helmets").doc(helmetId).get();
+  if (!snap.exists) return false;
+  knownHelmets.set(helmetId, Date.now() + KNOWN_HELMET_TTL_MS);
+  return true;
+}
+
+// ─── Telemetry write throttling ────────────────────────────────────────────────
+// The receiver posts every ~10s; writing every uplink straight to Firestore
+// burns through Spark's free daily write quota fast (2 helmets alone is
+// already ~85% of the 20k/day quota at that cadence — see the D17 rollout
+// review). Routine position/telemetry writes are throttled to once per
+// TELEMETRY_MIN_WRITE_INTERVAL_MS per helmet; a status change or an
+// alert-worthy reading (low battery / weak signal) always writes
+// immediately regardless of the throttle, so safety responsiveness isn't
+// affected — only the cadence of routine "still here, still fine" updates.
+const TELEMETRY_MIN_WRITE_INTERVAL_MS = Number(process.env.TELEMETRY_MIN_WRITE_INTERVAL_MS) || 30 * 1000;
+const lastTelemetryWrite = new Map(); // helmetId -> { at, status }
+
+function shouldWriteTelemetry(helmetId, status, alertWorthy) {
+  const prior = lastTelemetryWrite.get(helmetId);
+  if (!prior) return true;
+  if (prior.status !== status) return true;
+  if (alertWorthy) return true;
+  return Date.now() - prior.at >= TELEMETRY_MIN_WRITE_INTERVAL_MS;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Convert RSSI (dBm, typically -30 to -120) into a 0-100 signal quality % */
@@ -166,7 +209,14 @@ app.post("/lora-uplink", async (req, res) => {
     return res.status(400).json({ error: "Missing helmetId" });
   }
 
-  // 2) Extract fields (receiver already parsed the binary struct)
+  // 2) Reject telemetry for helmets that were never provisioned — closes
+  // off arbitrary-doc creation from a rogue/leaked receiver credential.
+  if (!(await helmetExists(helmetId))) {
+    console.warn(`[AUTH] lora-uplink rejected: unknown helmetId=${helmetId} (receiver=${auth.receiverId})`);
+    return res.status(404).json({ error: "Unknown helmetId" });
+  }
+
+  // 3) Extract fields (receiver already parsed the binary struct)
   const rssi = typeof body.rssi === "number" ? body.rssi : -120;
   const snr  = typeof body.snr  === "number" ? body.snr  : 0;
   const signal = rssiToPercent(rssi);
@@ -176,6 +226,12 @@ app.post("/lora-uplink", async (req, res) => {
   if (body.speed === 0) {
     status = "idle";
   }
+
+  const alertWorthy = (battery >= 0 && battery < 20) || signal < 30;
+  if (!shouldWriteTelemetry(helmetId, status, alertWorthy)) {
+    return res.status(200).json({ ok: true, helmetId, throttled: true });
+  }
+  lastTelemetryWrite.set(helmetId, { at: Date.now(), status });
 
   const now = admin.firestore.FieldValue.serverTimestamp();
 
@@ -197,10 +253,10 @@ app.post("/lora-uplink", async (req, res) => {
   };
 
   try {
-    // 3) Upsert helmet doc
+    // 4) Upsert helmet doc
     await db.collection("helmets").doc(helmetId).set(doc, { merge: true });
 
-    // 4) Generate alerts if needed
+    // 5) Generate alerts if needed
     const alertsBatch = db.batch();
     let alertCount = 0;
 
