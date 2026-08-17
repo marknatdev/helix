@@ -74,11 +74,11 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
     if (confirmed != true || !mounted) return;
 
     try {
-      final credential = await _service.provisionReceiver(
+      final (receiverId, credential) = await _service.provisionReceiver(
         hardwareId: hardwareCtrl.text.trim(),
         label: labelCtrl.text.trim().isEmpty ? null : labelCtrl.text.trim(),
       );
-      if (mounted) await _showCredentialOnce(credential);
+      if (mounted) await _showCredentialOnce(receiverId, credential);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,17 +88,43 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
     }
   }
 
-  Future<void> _showCredentialOnce(String credential) {
+  Future<void> _showCredentialOnce(String receiverId, String credential) {
     return showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
-        title: const Text('Receiver credential — shown once'),
+        title: const Text('Receiver provisioned'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text('RECEIVER ID',
+                style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
+            const SizedBox(height: 2),
+            Row(children: [
+              Expanded(
+                child: SelectableText(
+                  receiverId,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: receiverId));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Receiver ID copied.')),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 15),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              ),
+            ]),
+            const SizedBox(height: 10),
+            const Text('CREDENTIAL — SHOWN ONCE',
+                style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
+            const SizedBox(height: 2),
             SelectableText(
               credential,
               style: const TextStyle(
@@ -106,8 +132,10 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'This will not be shown again. Copy it into the receiver\'s '
-              'firmware/receiver/config.h now.',
+              'The credential will not be shown again — copy it into the '
+              'receiver\'s firmware/receiver/config.h (or the simulator\'s '
+              'config) now. Receiver ID is not secret; it stays visible on '
+              'this receiver\'s card below.',
               style: TextStyle(fontSize: 11, color: AppColors.statusWarn),
             ),
           ],
@@ -117,10 +145,10 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: credential));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied to clipboard.')),
+                const SnackBar(content: Text('Credential copied to clipboard.')),
               );
             },
-            child: const Text('Copy'),
+            child: const Text('Copy credential'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -250,6 +278,29 @@ class _ReceiverTile extends StatelessWidget {
                   'hw: ${receiver.hardwareId} · ${receiverStateLabel(receiver.state)}',
                   style: const TextStyle(fontSize: 11, color: AppColors.mutedFg),
                 ),
+                const SizedBox(height: 2),
+                Row(children: [
+                  Flexible(
+                    child: Text(
+                      'id: ${receiver.id}',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontFamily: 'monospace', fontSize: 10, color: AppColors.mutedFg),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: receiver.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Receiver ID copied.')),
+                      );
+                    },
+                    icon: const Icon(Icons.copy, size: 12),
+                    color: AppColors.mutedFg,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+                  ),
+                ]),
               ],
             ),
           ),

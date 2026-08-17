@@ -6,6 +6,7 @@ import '../state/providers.dart';
 import '../theme/app_theme.dart';
 import 'claim_helmet_dialog.dart';
 import '../views/dev_config_page.dart';
+import '../views/helmet_admin_page.dart';
 import '../views/receiver_admin_page.dart';
 
 class SettingsDialog extends ConsumerWidget {
@@ -153,6 +154,19 @@ class SettingsDialog extends ConsumerWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const ReceiverAdminPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                    _ActionTile(
+                      icon: Icons.construction_outlined,
+                      title: 'Provision helmets',
+                      subtitle: 'Create a helmet and get its one-time pairing code.',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HelmetAdminPage(),
                           ),
                         );
                       },

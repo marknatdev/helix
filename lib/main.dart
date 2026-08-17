@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 import 'auth/auth_gate.dart';
 import 'firebase_options.dart';
@@ -14,7 +14,9 @@ import 'views/incidents_view.dart';
 import 'views/live_view.dart';
 import 'views/reports_view.dart';
 import 'views/zones_view.dart';
+import 'widgets/claim_helmet_dialog.dart';
 import 'widgets/command_header.dart';
+import 'widgets/nav_rail.dart';
 import 'widgets/settings_dialog.dart';
 
 /// Site name shown in the header and map HUD.
@@ -66,8 +68,13 @@ class _UserHelmetBridge extends ConsumerWidget {
     final userSvc = ref.read(userServiceProvider);
     if (uid != null) {
       userSvc.listen(uid);
+      final feed = ref.read(helmetFeedProvider);
+      ref.read(authServiceProvider).user!.getIdToken().then((token) {
+        feed.attachLiveTelemetry(uid, token);
+      });
     } else {
       userSvc.clear();
+      ref.read(helmetFeedProvider).attachLiveTelemetry(null, null);
     }
 
     // Push registered IDs into the feed whenever they change.
@@ -96,6 +103,13 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
     );
   }
 
+  void _openAddHelmet() {
+    showDialog(
+      context: context,
+      builder: (_) => const ClaimHelmetDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final feed = ref.read(helmetFeedProvider);
@@ -120,9 +134,8 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
         CommandHeader(
           siteName: kSiteName,
           sosCount: sosCount,
-          activeTab: _tab,
-          onTabChange: (t) => setState(() => _tab = t),
           onOpenSettings: _openSettings,
+          onAddHelmet: _openAddHelmet,
         ),
         // Loading indicator while waiting for first Firestore snapshot
         if (isLoading)
@@ -159,9 +172,17 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
             ]),
           ),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: _buildTab(feed, helmets, selectedSafe),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              NavRail(activeTab: _tab, onTabChange: (t) => setState(() => _tab = t)),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: _buildTab(feed, helmets, selectedSafe),
+                ),
+              ),
+            ],
           ),
         ),
         Container(
@@ -181,7 +202,7 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
               ),
               InkWell(
                 onTap: () {
-                  html.window.open('/ppl/', '_blank');
+                  web.window.open('/ppl/', '_blank');
                 },
                 child: const Text(
                   'Privacy Policy',

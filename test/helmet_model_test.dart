@@ -1,34 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:helix_command_center/models/helmet.dart';
 
-// Fake DocumentSnapshot using mockito or a manual subclass
-class FakeDocumentSnapshot implements DocumentSnapshot<Map<String, dynamic>> {
-  final String _id;
-  final Map<String, dynamic>? _data;
-
-  FakeDocumentSnapshot(this._id, this._data);
-
-  @override
-  String get id => _id;
-
-  @override
-  Map<String, dynamic>? data() => _data;
-
-  @override
-  bool get exists => _data != null;
-
-  @override
-  dynamic operator [](Object key) => _data?[key];
-
-  @override
-  dynamic get(Object key) => _data?[key];
-
-  @override
-  DocumentReference<Map<String, dynamic>> get reference => throw UnimplementedError();
-
-  @override
-  SnapshotMetadata get metadata => throw UnimplementedError();
+/// Writes [data] to a throwaway fake Firestore doc and returns the resulting
+/// real DocumentSnapshot — avoids hand-implementing the (sealed)
+/// DocumentSnapshot interface just to build test fixtures.
+Future<DocumentSnapshot<Map<String, dynamic>>> _snapshot(
+  String id,
+  Map<String, dynamic> data,
+) async {
+  final firestore = FakeFirebaseFirestore();
+  final ref = firestore.collection('docs').doc(id);
+  await ref.set(data);
+  return ref.get();
 }
 
 void main() {
@@ -40,9 +25,9 @@ void main() {
       expect(h.effectiveStatus, HelmetStatus.offline);
     });
 
-    test('fromFirestore correctly parses active helmet fields', () {
+    test('fromFirestore correctly parses active helmet fields', () async {
       final now = DateTime.now();
-      final snap = FakeDocumentSnapshot('HLX-999', {
+      final snap = await _snapshot('HLX-999', {
         'helmetId': 'HLX-999',
         'worker': 'Jane Doe',
         'role': 'Engineer',
@@ -79,9 +64,9 @@ void main() {
       expect(h.effectiveStatus, HelmetStatus.active);
     });
 
-    test('effectiveStatus correctly calculates offline status after 5 minutes', () {
+    test('effectiveStatus correctly calculates offline status after 5 minutes', () async {
       final fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 6));
-      final snap = FakeDocumentSnapshot('HLX-999', {
+      final snap = await _snapshot('HLX-999', {
         'status': 'active',
         'lastSeen': Timestamp.fromDate(fiveMinAgo),
       });
@@ -92,9 +77,9 @@ void main() {
       expect(h.effectiveStatus, HelmetStatus.offline);
     });
 
-    test('effectiveStatus retains SOS status if within time limit', () {
+    test('effectiveStatus retains SOS status if within time limit', () async {
       final now = DateTime.now();
-      final snap = FakeDocumentSnapshot('HLX-999', {
+      final snap = await _snapshot('HLX-999', {
         'status': 'sos',
         'lastSeen': Timestamp.fromDate(now),
       });
@@ -107,9 +92,9 @@ void main() {
   });
 
   group('AlertEvent Model Tests', () {
-    test('fromFirestore correctly parses AlertEvent parameters', () {
+    test('fromFirestore correctly parses AlertEvent parameters', () async {
       final now = DateTime.now();
-      final snap = FakeDocumentSnapshot('ALERT-123', {
+      final snap = await _snapshot('ALERT-123', {
         'helmetId': 'HLX-111',
         'worker': 'John Smith',
         'kind': 'sos',

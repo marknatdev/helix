@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELIX Helmet Simulator</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>HELIX Helmet Simulator</h1>
+    <div class="topbar-controls">
+      <label>Backend URL <input id="backendUrl" type="text" /></label>
+      <label>Interval (ms) <input id="intervalMs" type="number" min="100" step="100" /></label>
+      <button id="btnStart" class="btn primary">Start</button>
+      <button id="btnStop" class="btn danger" disabled>Stop</button>
+      <span id="runState" class="run-state idle">Idle</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ─── Config builder ─────────────────────────────────────────── -->
+    <section class="panel config-panel">
+      <div class="panel-header">
+        <h2>Configuration</h2>
+        <div class="panel-header-actions">
+          <button id="btnFormView" class="tab-btn active">Form</button>
+          <button id="btnJsonView" class="tab-btn">Raw JSON</button>
+        </div>
+      </div>
+
+      <div class="config-io">
+        <input id="configName" type="text" placeholder="config-name.json" />
+        <button id="btnSave" class="btn">Save</button>
+        <select id="configList"><option value="">Load saved…</option></select>
+        <button id="btnLoad" class="btn">Load</button>
+      </div>
+      <p id="configError" class="error-text"></p>
+
+      <div id="formView" class="config-view">
+        <div class="subsection">
+          <div class="subsection-header">
+            <h3>Receivers</h3>
+            <button id="btnAddReceiver" class="btn small">+ Add receiver</button>
+          </div>
+          <p class="hint">Paste values from a real <code>POST /admin/receivers/provision</code> call. The simulator never provisions its own — see spec-data-flow-simulator.md, "Security &amp; Environment".</p>
+          <div id="receiverList" class="card-list"></div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-header">
+            <h3>Helmets</h3>
+            <button id="btnAddHelmet" class="btn small">+ Add helmet</button>
+          </div>
+          <div id="helmetList" class="card-list"></div>
+        </div>
+      </div>
+
+      <div id="jsonView" class="config-view hidden">
+        <textarea id="jsonEditor" spellcheck="false"></textarea>
+        <button id="btnApplyJson" class="btn">Apply JSON</button>
+      </div>
+    </section>
+
+    <!-- ─── Live view ──────────────────────────────────────────────── -->
+    <section class="panel live-panel">
+      <div class="panel-header"><h2>Live View</h2></div>
+
+      <div id="map" class="map"></div>
+
+      <div class="subsection">
+        <h3>Status</h3>
+        <div class="table-scroll">
+          <table id="statusTable">
+            <thead>
+              <tr>
+                <th>Helmet</th><th>Account (receiver)</th><th>Status</th>
+                <th>Lat</th><th>Lng</th><th>Battery</th><th>RSSI</th><th>Last result</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Raw request / response log</h3>
+        <div id="log" class="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
