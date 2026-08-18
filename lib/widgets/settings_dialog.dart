@@ -26,7 +26,7 @@ class SettingsDialog extends ConsumerWidget {
       backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.border),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460),
@@ -37,7 +37,7 @@ class SettingsDialog extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(children: [
-                const Icon(Icons.settings_outlined,
+                Icon(Icons.settings_outlined,
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 GestureDetector(
@@ -65,7 +65,7 @@ class SettingsDialog extends ConsumerWidget {
                 ),
               ]),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Manage live LoRaWAN telemetry feed.',
                 style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
               ),
@@ -104,18 +104,40 @@ class SettingsDialog extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Row(children: [
-                    const Icon(Icons.error_outline,
+                    Icon(Icons.error_outline,
                         color: AppColors.statusSos, size: 14),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(streamError,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppColors.statusSos, fontSize: 11)),
                     ),
                   ]),
                 ),
               ],
-              const Divider(color: AppColors.border, height: 20),
+              Divider(color: AppColors.border, height: 20),
+
+              // Appearance
+              const _SectionLabel('Appearance'),
+              const SizedBox(height: 6),
+              Consumer(builder: (ctx, ref, _) {
+                final light = ref.watch(themeModeProvider);
+                return _ActionTile(
+                  icon: light ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  title: light ? 'Light theme' : 'Dark theme',
+                  subtitle: light
+                      ? 'High-contrast palette for daylight/outdoor use.'
+                      : 'Mission-control palette for low-light use.',
+                  trailing: Switch(
+                    value: light,
+                    activeThumbColor: AppColors.primary,
+                    onChanged: (v) =>
+                        ref.read(themeModeProvider.notifier).setLight(v),
+                  ),
+                  onTap: () => ref.read(themeModeProvider.notifier).toggle(),
+                );
+              }),
+              Divider(color: AppColors.border, height: 20),
 
               // Manage helmets
               const _SectionLabel('Helmets'),
@@ -137,7 +159,7 @@ class SettingsDialog extends ConsumerWidget {
                   },
                 );
               }),
-              const Divider(color: AppColors.border, height: 20),
+              Divider(color: AppColors.border, height: 20),
 
               // Admin: manage receivers — only visible to users with role == 'admin'.
               if (isAdmin)
@@ -171,7 +193,7 @@ class SettingsDialog extends ConsumerWidget {
                         );
                       },
                     ),
-                    const Divider(color: AppColors.border, height: 20),
+                    Divider(color: AppColors.border, height: 20),
                   ],
                 ),
 
@@ -239,7 +261,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           letterSpacing: 1.6,
           fontWeight: FontWeight.w600,
@@ -273,7 +295,7 @@ class _RowTile extends StatelessWidget {
                     fontSize: 13, fontWeight: FontWeight.w500)),
             const SizedBox(height: 2),
             Text(subtitle,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 11, color: AppColors.mutedFg)),
           ],
         ),
@@ -289,12 +311,17 @@ class _ActionTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
   final bool destructive;
+
+  /// Replaces the default chevron — used by the theme switch, where the tile
+  /// carries a control rather than navigating somewhere.
+  final Widget? trailing;
   const _ActionTile({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
     this.destructive = false,
+    this.trailing,
   });
   @override
   Widget build(BuildContext context) {
@@ -322,13 +349,14 @@ class _ActionTile extends StatelessWidget {
                         color: c)),
                 const SizedBox(height: 2),
                 Text(subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 11, color: AppColors.mutedFg)),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right,
-              size: 16, color: AppColors.mutedFg),
+          trailing ??
+              Icon(Icons.chevron_right,
+                  size: 16, color: AppColors.mutedFg),
         ]),
       ),
     );

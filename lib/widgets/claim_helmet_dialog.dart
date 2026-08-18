@@ -77,7 +77,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
       backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.border),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420, maxHeight: 560),
@@ -88,7 +88,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(children: [
-                const Icon(Icons.qr_code_scanner,
+                Icon(Icons.qr_code_scanner,
                     color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 const Text('Claim a Helmet',
@@ -105,7 +105,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                 ),
               ]),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Enter the helmet ID and the pairing code from its QR label. '
                 'Only registered/claimed helmets appear on the dashboard.',
                 style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
@@ -119,7 +119,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                 decoration: InputDecoration(
                   hintText: 'Helmet ID, e.g. HLX-001',
                   hintStyle:
-                      const TextStyle(fontSize: 13, color: AppColors.mutedFg),
+                      TextStyle(fontSize: 13, color: AppColors.mutedFg),
                   isDense: true,
                   filled: true,
                   fillColor: AppColors.accent,
@@ -127,7 +127,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                       horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                 ),
               ),
@@ -140,7 +140,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                         fontSize: 13, fontFamily: 'monospace'),
                     decoration: InputDecoration(
                       hintText: 'Pairing code',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                           fontSize: 13, color: AppColors.mutedFg),
                       isDense: true,
                       filled: true,
@@ -149,7 +149,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                           horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(color: AppColors.border),
                       ),
                     ),
                     onSubmitted: (_) => _claim(),
@@ -168,7 +168,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                           borderRadius: BorderRadius.circular(6)),
                     ),
                     child: _busy
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 14,
                             height: 14,
                             child: CircularProgressIndicator(
@@ -181,13 +181,13 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
               if (_error != null) ...[
                 const SizedBox(height: 6),
                 Text(_error!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.statusSos, fontSize: 11)),
               ],
 
               const SizedBox(height: 16),
               Text('CLAIMED (${ids.length})'.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     letterSpacing: 1.6,
                     fontWeight: FontWeight.w600,
@@ -202,7 +202,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                     border: Border.all(color: AppColors.border),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text('No helmets claimed yet.',
                         style: TextStyle(
                             fontSize: 12, color: AppColors.mutedFg)),
@@ -224,7 +224,7 @@ class _ClaimHelmetDialogState extends ConsumerState<ClaimHelmetDialog> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(children: [
-                          const Icon(Icons.construction,
+                          Icon(Icons.construction,
                               size: 14, color: AppColors.primary),
                           const SizedBox(width: 10),
                           Text(id,

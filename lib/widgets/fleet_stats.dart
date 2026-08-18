@@ -137,7 +137,7 @@ class _Stat extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(label.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
                       letterSpacing: 2,
                       color: AppColors.mutedFg,
@@ -149,7 +149,7 @@ class _Stat extends StatelessWidget {
             const SizedBox(height: 8),
             Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Text(value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -160,7 +160,7 @@ class _Stat extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 3),
                   child: Text(unit!,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 12, color: AppColors.mutedFg)),
                 ),
               ],
@@ -169,7 +169,7 @@ class _Stat extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(sub!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 11, color: AppColors.mutedFg)),
               ),
           ],

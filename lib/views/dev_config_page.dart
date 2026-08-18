@@ -248,7 +248,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.sidebar,
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.developer_mode, size: 18, color: AppColors.primary),
             SizedBox(width: 8),
@@ -273,7 +273,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
                 // Helmet list
                 Container(
                   width: 240,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.sidebar,
                     border: Border(
                         right: BorderSide(color: AppColors.border)),
@@ -310,7 +310,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
                             )),
                         subtitle: Text(
                           status,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 10, color: AppColors.mutedFg),
                         ),
                         onTap: () => _selectHelmet(h['id']),
@@ -321,7 +321,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
                 // Editor
                 Expanded(
                   child: _selectedId == null
-                      ? const Center(
+                      ? Center(
                           child: Text('Select a helmet to configure',
                               style: TextStyle(
                                   color: AppColors.mutedFg, fontSize: 13)),
@@ -401,7 +401,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
           onChanged: _toggleKeepAlive,
           title: const Text('Auto-ping lastSeen (every 30s)',
               style: TextStyle(fontSize: 13)),
-          subtitle: const Text(
+          subtitle: Text(
             'Keeps the helmet "online" in the dashboard by updating lastSeen periodically.',
             style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
           ),
@@ -418,7 +418,7 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
           onChanged: _toggleWalk,
           title: const Text('Simulate walking path',
               style: TextStyle(fontSize: 13)),
-          subtitle: const Text(
+          subtitle: Text(
             'Periodically updates GPS coordinates in real-time to simulate a walking worker.',
             style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
           ),
@@ -452,16 +452,16 @@ class _DevConfigPageState extends ConsumerState<DevConfigPage> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle:
-            const TextStyle(fontSize: 11, color: AppColors.mutedFg),
+            TextStyle(fontSize: 11, color: AppColors.mutedFg),
         filled: true,
         fillColor: AppColors.sidebar,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -476,7 +476,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           letterSpacing: 1.6,
           fontWeight: FontWeight.w600,
@@ -497,7 +497,7 @@ class _SecretBadge extends StatelessWidget {
         border: Border.all(
             color: AppColors.statusWarn.withValues(alpha: 0.5)),
       ),
-      child: const Text('SECRET',
+      child: Text('SECRET',
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w700,

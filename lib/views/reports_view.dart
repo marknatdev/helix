@@ -48,7 +48,7 @@ class ReportsView extends StatelessWidget {
                               child: Text(e.key,
                                   style: const TextStyle(fontSize: 13))),
                           Text('${e.value} helmets',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
                                   color: AppColors.mutedFg)),
@@ -80,7 +80,7 @@ class _ReportCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title.toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 11,
                   letterSpacing: 1.6,
                   color: AppColors.mutedFg,
@@ -104,7 +104,7 @@ class _InlineStat extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 10,
                   letterSpacing: 1.4,
                   color: AppColors.mutedFg)),

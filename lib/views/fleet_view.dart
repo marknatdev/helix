@@ -34,7 +34,7 @@ class FleetView extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(width: 8),
           Text('${helmets.length} helmets',
-              style: const TextStyle(fontSize: 12, color: AppColors.mutedFg)),
+              style: TextStyle(fontSize: 12, color: AppColors.mutedFg)),
         ]),
       ),
       Expanded(

@@ -47,7 +47,7 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
                     const InputDecoration(labelText: 'Label (optional)'),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'The credential is shown exactly once after provisioning. '
                 'Copy it into firmware/receiver/config.h before closing this dialog — '
                 'it cannot be retrieved again, only rotated.',
@@ -99,7 +99,7 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('RECEIVER ID',
+            Text('RECEIVER ID',
                 style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
             const SizedBox(height: 2),
             Row(children: [
@@ -122,16 +122,16 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
               ),
             ]),
             const SizedBox(height: 10),
-            const Text('CREDENTIAL — SHOWN ONCE',
+            Text('CREDENTIAL — SHOWN ONCE',
                 style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
             const SizedBox(height: 2),
             SelectableText(
               credential,
-              style: const TextStyle(
+              style: TextStyle(
                   fontFamily: 'monospace', fontSize: 14, color: AppColors.primary),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'The credential will not be shown again — copy it into the '
               'receiver\'s firmware/receiver/config.h (or the simulator\'s '
               'config) now. Receiver ID is not secret; it stays visible on '
@@ -218,7 +218,7 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
           if (snapshot.hasError) {
             return Center(
               child: Text('Error: ${snapshot.error}',
-                  style: const TextStyle(color: AppColors.statusSos)),
+                  style: TextStyle(color: AppColors.statusSos)),
             );
           }
           if (!snapshot.hasData) {
@@ -226,7 +226,7 @@ class _ReceiverAdminPageState extends State<ReceiverAdminPage> {
           }
           final receivers = snapshot.data!;
           if (receivers.isEmpty) {
-            return const Center(
+            return Center(
               child: Text('No receivers provisioned yet.',
                   style: TextStyle(color: AppColors.mutedFg)),
             );
@@ -276,7 +276,7 @@ class _ReceiverTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   'hw: ${receiver.hardwareId} · ${receiverStateLabel(receiver.state)}',
-                  style: const TextStyle(fontSize: 11, color: AppColors.mutedFg),
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
                 ),
                 const SizedBox(height: 2),
                 Row(children: [
@@ -284,7 +284,7 @@ class _ReceiverTile extends StatelessWidget {
                     child: Text(
                       'id: ${receiver.id}',
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontFamily: 'monospace', fontSize: 10, color: AppColors.mutedFg),
                     ),
                   ),

@@ -59,7 +59,7 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
                     const InputDecoration(labelText: 'Label (optional)'),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'The pairing code is shown exactly once after provisioning. '
                 'It cannot be retrieved again — only re-provisioning the same '
                 'unclaimed helmet ID issues a fresh one.',
@@ -118,7 +118,7 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('HELMET ID',
+            Text('HELMET ID',
                 style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
             const SizedBox(height: 2),
             Row(children: [
@@ -141,16 +141,16 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
               ),
             ]),
             const SizedBox(height: 10),
-            const Text('PAIRING CODE — SHOWN ONCE',
+            Text('PAIRING CODE — SHOWN ONCE',
                 style: TextStyle(fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
             const SizedBox(height: 2),
             SelectableText(
               pairingCode,
-              style: const TextStyle(
+              style: TextStyle(
                   fontFamily: 'monospace', fontSize: 14, color: AppColors.primary),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'The pairing code will not be shown again. Give it to whoever '
               'is claiming this helmet (Settings → Manage claimed helmets, '
               'or the "Add helmet" button). Helmet ID is not secret; it '
@@ -201,13 +201,13 @@ class _HelmetAdminPageState extends State<HelmetAdminPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.construction_outlined,
+                    Icon(Icons.construction_outlined,
                         size: 32, color: AppColors.mutedFg),
                     const SizedBox(height: 12),
-                    const Text('No helmets provisioned this session.',
+                    Text('No helmets provisioned this session.',
                         style: TextStyle(color: AppColors.mutedFg)),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Pairing codes can only be shown once, right after '
                       'provisioning — there\'s no list of past ones to browse.',
                       textAlign: TextAlign.center,
@@ -248,7 +248,7 @@ class _HistoryTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.construction, size: 18, color: AppColors.statusOk),
+          Icon(Icons.construction, size: 18, color: AppColors.statusOk),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -262,7 +262,7 @@ class _HistoryTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${entry.label ?? 'no label'} · provisioned ${_timeAgo(entry.at)}',
-                  style: const TextStyle(fontSize: 11, color: AppColors.mutedFg),
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
                 ),
               ],
             ),

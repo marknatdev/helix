@@ -20,7 +20,7 @@ class CommandHeader extends StatelessWidget {
     final wide = MediaQuery.of(context).size.width >= 900;
     return Container(
       height: 56,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.sidebar,
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
@@ -34,14 +34,14 @@ class CommandHeader extends StatelessWidget {
               color: AppColors.primary,
               borderRadius: BorderRadius.circular(6),
             ),
-            child: const Icon(Icons.construction,
+            child: Icon(Icons.construction,
                 color: AppColors.primaryFg, size: 16),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Text('HELIX',
                   style: TextStyle(
                     fontFamily: 'monospace',
@@ -64,11 +64,11 @@ class CommandHeader extends StatelessWidget {
               icon: Icons.radio,
               iconColor: AppColors.statusOk,
               children: [
-                const Text('MQTT',
+                Text('MQTT',
                     style: TextStyle(color: AppColors.mutedFg, fontSize: 11)),
                 const SizedBox(width: 6),
                 Text(siteName,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.foreground, fontSize: 11)),
               ],
             ),
@@ -116,7 +116,7 @@ class _AddHelmetButton extends StatelessWidget {
           border: Border.all(color: AppColors.border),
           borderRadius: BorderRadius.circular(6),
         ),
-        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.add, size: 14, color: AppColors.foreground),
           SizedBox(width: 6),
           Text('Add helmet', style: TextStyle(fontSize: 12)),

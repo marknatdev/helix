@@ -109,7 +109,7 @@ class _Lane extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            border: const Border(bottom: BorderSide(color: AppColors.border)),
+            border: Border(bottom: BorderSide(color: AppColors.border)),
             gradient: LinearGradient(
               colors: [accent.withValues(alpha: 0.08), Colors.transparent],
             ),
@@ -125,7 +125,7 @@ class _Lane extends StatelessWidget {
                     color: accent)),
             const SizedBox(width: 6),
             Text('${alerts.length}',
-                style: const TextStyle(
+                style: TextStyle(
                     fontFamily: 'monospace', fontSize: 11, color: AppColors.mutedFg)),
           ]),
         ),
@@ -133,7 +133,7 @@ class _Lane extends StatelessWidget {
           child: alerts.isEmpty
               ? Center(
                   child: Text(emptyText,
-                      style: const TextStyle(fontSize: 12, color: AppColors.mutedFg)),
+                      style: TextStyle(fontSize: 12, color: AppColors.mutedFg)),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(8),
@@ -189,14 +189,14 @@ class _TriageCard extends StatelessWidget {
                     color: accent)),
             const Spacer(),
             Text(timeAgo(alert.ts),
-                style: const TextStyle(
+                style: TextStyle(
                     fontFamily: 'monospace', fontSize: 10, color: AppColors.mutedFg)),
           ]),
           const SizedBox(height: 6),
           Text(alert.message, style: const TextStyle(fontSize: 12)),
           const SizedBox(height: 2),
           Text('${alert.helmetId} · ${alert.worker}',
-              style: const TextStyle(fontSize: 10, color: AppColors.mutedFg)),
+              style: TextStyle(fontSize: 10, color: AppColors.mutedFg)),
           const SizedBox(height: 8),
           Row(children: [
             _SmallBtn(label: 'Locate', filled: true, onTap: () => onSelect(alert.helmetId)),

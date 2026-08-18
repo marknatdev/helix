@@ -34,7 +34,7 @@ class _ZonesViewState extends ConsumerState<ZonesView> {
       loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
       error: (e, _) => Center(
         child: Text('Failed to load zones: $e',
-            style: const TextStyle(color: AppColors.statusSos, fontSize: 12)),
+            style: TextStyle(color: AppColors.statusSos, fontSize: 12)),
       ),
       data: (zones) {
         final selectedZone = zones.where((z) => z.id == _selectedZoneId).firstOrNull;
@@ -116,7 +116,7 @@ class _ZoneList extends StatelessWidget {
       child: Column(children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Row(children: [
@@ -133,7 +133,7 @@ class _ZoneList extends StatelessWidget {
                   border: Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.add, size: 13, color: AppColors.foreground),
                   SizedBox(width: 4),
                   Text('New', style: TextStyle(fontSize: 11)),
@@ -147,7 +147,7 @@ class _ZoneList extends StatelessWidget {
               ? Container(
                   padding: const EdgeInsets.all(24),
                   alignment: Alignment.center,
-                  child: const Text('No zones yet. Create one to start geofencing.',
+                  child: Text('No zones yet. Create one to start geofencing.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12, color: AppColors.mutedFg)),
                 )
@@ -164,7 +164,7 @@ class _ZoneList extends StatelessWidget {
                         onTap: () => onSelect(z.id),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(bottom: BorderSide(color: AppColors.border)),
                           ),
                           child: Row(children: [
@@ -186,7 +186,7 @@ class _ZoneList extends StatelessWidget {
                                           fontSize: 13, fontWeight: FontWeight.w500)),
                                   Text(
                                       '${z.assignedHelmetIds.length} assigned · $inside inside · ${z.radiusM.round()}m radius',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 10, color: AppColors.mutedFg)),
                                 ],
                               ),
@@ -226,7 +226,7 @@ class _ZoneDetail extends ConsumerWidget {
         ),
         alignment: Alignment.center,
         padding: const EdgeInsets.all(24),
-        child: const Text('Select a zone to view assignments',
+        child: Text('Select a zone to view assignments',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: AppColors.mutedFg)),
       );
@@ -246,7 +246,7 @@ class _ZoneDetail extends ConsumerWidget {
       child: Column(children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Row(children: [
@@ -255,7 +255,7 @@ class _ZoneDetail extends ConsumerWidget {
                 Text(z.name,
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                 Text('${z.kind} · ${z.radiusM.round()}m radius',
-                    style: const TextStyle(fontSize: 11, color: AppColors.mutedFg)),
+                    style: TextStyle(fontSize: 11, color: AppColors.mutedFg)),
               ]),
             ),
             IconButton(
@@ -281,7 +281,7 @@ class _ZoneDetail extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             children: [
               if (unassignedOwned.isNotEmpty) ...[
-                const Text('ASSIGN A HELMET YOU OWN',
+                Text('ASSIGN A HELMET YOU OWN',
                     style: TextStyle(
                         fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
                 const SizedBox(height: 6),
@@ -293,7 +293,7 @@ class _ZoneDetail extends ConsumerWidget {
                       ActionChip(
                         label: Text(id, style: const TextStyle(fontSize: 11)),
                         backgroundColor: AppColors.accent,
-                        side: const BorderSide(color: AppColors.border),
+                        side: BorderSide(color: AppColors.border),
                         onPressed: () async {
                           try {
                             await ref
@@ -311,12 +311,12 @@ class _ZoneDetail extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
               ],
-              const Text('ASSIGNED',
+              Text('ASSIGNED',
                   style: TextStyle(
                       fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
               const SizedBox(height: 6),
               if (z.assignedHelmetIds.isEmpty)
-                const Text('No helmets assigned yet.',
+                Text('No helmets assigned yet.',
                     style: TextStyle(fontSize: 12, color: AppColors.mutedFg))
               else
                 for (final id in z.assignedHelmetIds)
@@ -386,7 +386,7 @@ class _AssignedRow extends StatelessWidget {
                     style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
                 if (helmet != null)
                   Text(helmet!.worker,
-                      style: const TextStyle(fontSize: 10, color: AppColors.mutedFg)),
+                      style: TextStyle(fontSize: 10, color: AppColors.mutedFg)),
               ],
             ),
           ),

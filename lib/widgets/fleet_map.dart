@@ -71,7 +71,9 @@ class _FleetMapState extends State<FleetMap> {
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.helix.command_center',
-              tileBuilder: _darkTileBuilder,
+              // Light theme uses the tiles as-is; the inversion filter below
+              // exists to make OSM's light tiles fit the dark palette.
+              tileBuilder: AppColors.isLight ? null : darkTileBuilder,
             ),
             CircleLayer(circles: [
               CircleMarker(
@@ -113,7 +115,7 @@ class _FleetMapState extends State<FleetMap> {
               const SizedBox(width: 8),
               const Text('Live map', style: TextStyle(fontSize: 12)),
               const SizedBox(width: 6),
-              const Text('· Pier 27 Site',
+              Text('· Pier 27 Site',
                   style: TextStyle(
                       fontFamily: 'monospace',
                       fontSize: 11,
@@ -163,7 +165,7 @@ class _FleetMapState extends State<FleetMap> {
           ),
         ),
         // Bottom-right coords
-        const Positioned(
+        Positioned(
           bottom: 12,
           right: 12,
           child: _HudPill(
@@ -179,7 +181,10 @@ class _FleetMapState extends State<FleetMap> {
   }
 }
 
-Widget _darkTileBuilder(BuildContext ctx, Widget tile, TileImage image) {
+/// Inverts OSM's light tiles to fit the dark palette. Shared with ZoneMap so
+/// both maps render identically; skipped entirely under the light theme,
+/// where the raw tiles already match.
+Widget darkTileBuilder(BuildContext ctx, Widget tile, TileImage image) {
   return ColorFiltered(
     colorFilter: const ColorFilter.matrix([
       // invert + hue-rotate approximation w/ slight de-sat and dim
@@ -317,7 +322,7 @@ class _HudIconBtn extends StatelessWidget {
           if (label != null) ...[
             const SizedBox(width: 4),
             Text(label!,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 11, color: AppColors.mutedFg)),
           ],
         ]),
@@ -340,7 +345,7 @@ class _LegendDot extends StatelessWidget {
       ),
       const SizedBox(width: 6),
       Text(label,
-          style: const TextStyle(
+          style: TextStyle(
               fontFamily: 'monospace',
               fontSize: 11,
               color: AppColors.mutedFg)),
@@ -386,7 +391,7 @@ class _LivePingState extends State<_LivePing>
             child: Container(
               width: 12 * _c.value + 4,
               height: 12 * _c.value + 4,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.statusOk,
                 shape: BoxShape.circle,
               ),
@@ -396,7 +401,7 @@ class _LivePingState extends State<_LivePing>
         Container(
           width: 8,
           height: 8,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.statusOk,
             shape: BoxShape.circle,
           ),

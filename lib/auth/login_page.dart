@@ -83,13 +83,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Icon(Icons.construction,
+                          child: Icon(Icons.construction,
                               color: AppColors.primaryFg, size: 18),
                         ),
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text('HELIX',
                                 style: TextStyle(
                                   fontFamily: 'monospace',
@@ -117,7 +117,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       signIn
                           ? 'Authorized personnel only. Credentials verified by Firebase.'
                           : 'Register a new operator to access the command center.',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 12, color: AppColors.mutedFg),
                     ),
                     const SizedBox(height: 20),
@@ -170,12 +170,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(children: [
-                          const Icon(Icons.error_outline,
+                          Icon(Icons.error_outline,
                               color: AppColors.statusSos, size: 14),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(_error!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: AppColors.statusSos,
                                     fontSize: 12)),
                           ),
@@ -195,7 +195,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                       ),
                       child: _busy
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
@@ -218,17 +218,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         signIn
                             ? "Need access? Create an account"
                             : 'Already have an account? Sign in',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppColors.mutedFg, fontSize: 12),
                       ),
                     ),
-                    const Divider(color: AppColors.border, height: 24),
+                    Divider(color: AppColors.border, height: 24),
                     Center(
                       child: InkWell(
                         onTap: () {
                           web.window.open('/ppl/', '_blank');
                         },
-                        child: const Text(
+                        child: Text(
                           'Privacy Policy',
                           style: TextStyle(
                             color: AppColors.primary,
@@ -251,7 +251,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   InputDecoration _decoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: AppColors.mutedFg, fontSize: 13),
+      hintStyle: TextStyle(color: AppColors.mutedFg, fontSize: 13),
       isDense: true,
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -259,15 +259,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       fillColor: AppColors.background.withValues(alpha: 0.5),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        borderSide: BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
   }
@@ -280,7 +280,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
             fontSize: 10,
             letterSpacing: 1.6,
             color: AppColors.mutedFg,

@@ -92,7 +92,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
       backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.border),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
@@ -103,7 +103,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(children: [
-                const Icon(Icons.crop_free, color: AppColors.primary, size: 18),
+                Icon(Icons.crop_free, color: AppColors.primary, size: 18),
                 const SizedBox(width: 8),
                 const Text('New Zone',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
@@ -117,7 +117,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
                 ),
               ]),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Coordinates default to the fleet\'s current position as a '
                 'placeholder — adjust to the real site boundary before relying '
                 'on this for containment alerts.',
@@ -131,7 +131,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
                   child: DropdownButtonFormField<String>(
                     initialValue: _kind,
                     dropdownColor: AppColors.popover,
-                    style: const TextStyle(fontSize: 13, color: AppColors.foreground),
+                    style: TextStyle(fontSize: 13, color: AppColors.foreground),
                     decoration: _decoration(),
                     items: const [
                       DropdownMenuItem(value: 'operational', child: Text('Operational')),
@@ -160,7 +160,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
               ]),
               if (_error != null) ...[
                 const SizedBox(height: 8),
-                Text(_error!, style: const TextStyle(color: AppColors.statusSos, fontSize: 11)),
+                Text(_error!, style: TextStyle(color: AppColors.statusSos, fontSize: 11)),
               ],
               const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -176,7 +176,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
                     foregroundColor: AppColors.primaryFg,
                   ),
                   child: _busy
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 14,
                           height: 14,
                           child: CircularProgressIndicator(
@@ -193,14 +193,14 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
 
   InputDecoration _decoration({String? hint}) => InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(fontSize: 13, color: AppColors.mutedFg),
+        hintStyle: TextStyle(fontSize: 13, color: AppColors.mutedFg),
         isDense: true,
         filled: true,
         fillColor: AppColors.accent,
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
       );
 
@@ -208,7 +208,7 @@ class _CreateZoneDialogState extends ConsumerState<CreateZoneDialog> {
       {String? hint, TextInputType? keyboardType}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label,
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 10, letterSpacing: 1.2, color: AppColors.mutedFg)),
       const SizedBox(height: 4),
       TextField(

@@ -32,14 +32,14 @@ class HelmetDetail extends StatelessWidget {
                 border: Border.all(color: AppColors.border),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.place_outlined,
+              child: Icon(Icons.place_outlined,
                   size: 16, color: AppColors.mutedFg),
             ),
             const SizedBox(height: 10),
             const Text('Select a helmet to inspect',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Click a marker on the map or a row in the roster to see live vitals, location history, and open a comms channel.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11, color: AppColors.mutedFg),
@@ -71,7 +71,7 @@ class HelmetDetail extends StatelessWidget {
           // Header
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: AppColors.border)),
             ),
             child: Row(
@@ -125,7 +125,7 @@ class HelmetDetail extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text('${h.id} · ${h.role} · ${h.crew}',
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 11, color: AppColors.mutedFg)),
                     ],
                   ),
@@ -162,7 +162,7 @@ class HelmetDetail extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(children: [
-                        const Icon(Icons.shield_outlined,
+                        Icon(Icons.shield_outlined,
                             color: AppColors.statusSos, size: 14),
                         const SizedBox(width: 8),
                         Expanded(
@@ -240,7 +240,7 @@ class HelmetDetail extends StatelessWidget {
           // Footer actions
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: Row(children: [
@@ -297,7 +297,7 @@ class _Metric extends StatelessWidget {
             Icon(icon, size: 11, color: AppColors.mutedFg),
             const SizedBox(width: 4),
             Text(label.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 9,
                     letterSpacing: 1.6,
                     color: AppColors.mutedFg,
@@ -316,7 +316,7 @@ class _Metric extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 2),
                 child: Text(unit!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 10, color: AppColors.mutedFg)),
               ),
             ],
@@ -350,7 +350,7 @@ class _MiniPanel extends StatelessWidget {
             Icon(icon, size: 11, color: AppColors.mutedFg),
             const SizedBox(width: 4),
             Text(label,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 9,
                     letterSpacing: 1.6,
                     color: AppColors.mutedFg,
@@ -358,7 +358,7 @@ class _MiniPanel extends StatelessWidget {
           ]),
           const SizedBox(height: 4),
           Text(value,
-              style: const TextStyle(
+              style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 11,
                   color: AppColors.foreground)),

@@ -47,6 +47,9 @@ class ZoneMap extends StatelessWidget {
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             userAgentPackageName: 'com.helix.command_center',
+            // Match FleetMap: invert OSM's light tiles under the dark
+            // palette, use them untouched under the light one.
+            tileBuilder: AppColors.isLight ? null : darkTileBuilder,
           ),
           CircleLayer(circles: [
             for (final z in zones)

@@ -43,14 +43,19 @@ Future<void> main() async {
   runApp(const ProviderScope(child: HelixApp()));
 }
 
-class HelixApp extends StatelessWidget {
+class HelixApp extends ConsumerWidget {
   const HelixApp({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final light = ref.watch(themeModeProvider);
+    // AppColors' tokens are mutable statics read at build time, so the swap
+    // has to happen before the tree below is built — watching the provider
+    // here (above MaterialApp) is what makes the whole app re-read them.
+    AppColors.apply(light: light);
     return MaterialApp(
       title: 'HELIX · Smart Helmet Command Center',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
+      theme: buildAppTheme(light: light),
       home: const AuthGate(child: _UserHelmetBridge()),
     );
   }
@@ -188,7 +193,7 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
         Container(
           width: double.infinity,
           height: 36,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.sidebar,
             border: Border(top: BorderSide(color: AppColors.border)),
           ),
@@ -196,7 +201,7 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 '© 2026 HELIX. All rights reserved.',
                 style: TextStyle(color: AppColors.mutedFg, fontSize: 11),
               ),
@@ -204,7 +209,7 @@ class _CommandCenterPageState extends ConsumerState<CommandCenterPage> {
                 onTap: () {
                   web.window.open('/ppl/', '_blank');
                 },
-                child: const Text(
+                child: Text(
                   'Privacy Policy',
                   style: TextStyle(
                     color: AppColors.primary,

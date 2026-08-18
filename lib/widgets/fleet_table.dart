@@ -76,7 +76,7 @@ class _FleetTableState extends State<FleetTable> {
           ? Container(
               padding: const EdgeInsets.all(24),
               alignment: Alignment.center,
-              child: const Text('No helmets connected.',
+              child: Text('No helmets connected.',
                   style: TextStyle(fontSize: 12, color: AppColors.mutedFg)),
             )
           : Column(children: [
@@ -131,7 +131,7 @@ class _HeaderRow extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Row(children: [
@@ -172,7 +172,7 @@ class _FleetRow extends StatelessWidget {
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Row(children: [
@@ -218,7 +218,7 @@ class _FleetRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(timeAgo(helmet.lastSeen),
-                  style: const TextStyle(fontSize: 11, color: AppColors.mutedFg)),
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedFg)),
             ),
           ]),
         ),

@@ -31,11 +31,11 @@ class AlertFeed extends StatelessWidget {
         Container(
           padding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Row(children: [
-            const Icon(Icons.verified_user_outlined,
+            Icon(Icons.verified_user_outlined,
                 color: AppColors.primary, size: 16),
             const SizedBox(width: 8),
             Expanded(
@@ -46,7 +46,7 @@ class AlertFeed extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w600)),
                   Text('${active.length} active · ${resolved.length} resolved',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 11, color: AppColors.mutedFg)),
                 ],
               ),
@@ -76,7 +76,7 @@ class AlertFeed extends StatelessWidget {
                 onAcknowledge: onAcknowledge,
               ),
               if (resolved.isNotEmpty)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Text('RESOLVED',
                       style: TextStyle(
@@ -91,12 +91,12 @@ class AlertFeed extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: AppColors.border)),
                     ),
                     child: Row(children: [
-                      const Icon(Icons.check_circle_outline,
+                      Icon(Icons.check_circle_outline,
                           size: 14, color: AppColors.statusOk),
                       const SizedBox(width: 8),
                       Expanded(
@@ -107,7 +107,7 @@ class AlertFeed extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontSize: 12)),
                             Text('${a.worker} · ${timeAgo(a.ts)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontSize: 10,
                                     color: AppColors.mutedFg)),
                           ],
@@ -138,7 +138,7 @@ class _ActiveAlertTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = alertKindColor(alert.kind);
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -177,7 +177,7 @@ class _ActiveAlertTile extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(timeAgo(alert.ts),
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontFamily: 'monospace',
                           fontSize: 10,
                           color: AppColors.mutedFg)),
@@ -188,15 +188,15 @@ class _ActiveAlertTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(children: [
                   Text(alert.helmetId,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontFamily: 'monospace',
                           fontSize: 11,
                           color: AppColors.mutedFg)),
-                  const Text(' · ',
+                  Text(' · ',
                       style: TextStyle(
                           fontSize: 11, color: AppColors.mutedFg)),
                   Text(alert.worker,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 11, color: AppColors.mutedFg)),
                 ]),
                 const SizedBox(height: 8),

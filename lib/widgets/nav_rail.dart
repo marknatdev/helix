@@ -25,7 +25,7 @@ class NavRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 56,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.sidebar,
         border: Border(right: BorderSide(color: AppColors.border)),
       ),

@@ -41,7 +41,7 @@ class _LiveClockState extends State<LiveClock> {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(_now,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'monospace',
             color: AppColors.mutedFg,
             fontSize: 11,

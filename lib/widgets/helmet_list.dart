@@ -49,14 +49,14 @@ class HelmetList extends StatelessWidget {
         Container(
           padding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Row(children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Fleet roster',
                       style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w600)),
@@ -68,7 +68,7 @@ class HelmetList extends StatelessWidget {
               ),
             ),
             Text('${visible.length} shown',
-                style: const TextStyle(
+                style: TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 11,
                     color: AppColors.mutedFg)),
@@ -76,7 +76,7 @@ class HelmetList extends StatelessWidget {
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border)),
           ),
           child: Wrap(
@@ -124,7 +124,7 @@ class HelmetList extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         'Configure your telemetry feed in Settings (⚙️) to stream live data.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -184,7 +184,7 @@ class _FilterChip extends StatelessWidget {
             Container(
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.statusSos,
                 shape: BoxShape.circle,
               ),
@@ -199,7 +199,7 @@ class _FilterChip extends StatelessWidget {
                       : AppColors.mutedFg)),
           const SizedBox(width: 6),
           Text('$count',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'monospace',
                 fontSize: 10,
                 color: AppColors.mutedFg,
@@ -232,7 +232,7 @@ class _HelmetTile extends StatelessWidget {
             color: selected
                 ? AppColors.accent.withValues(alpha: 0.8)
                 : Colors.transparent,
-            border: const Border(
+            border: Border(
                 bottom: BorderSide(color: AppColors.border)),
           ),
           padding:
@@ -281,17 +281,17 @@ class _HelmetTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Row(children: [
                       Text(helmet.id,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontFamily: 'monospace',
                               fontSize: 11,
                               color: AppColors.mutedFg)),
-                      const Text(' · ',
+                      Text(' · ',
                           style: TextStyle(
                               fontSize: 11, color: AppColors.mutedFg)),
                       Flexible(
                         child: Text(helmet.crew,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 11, color: AppColors.mutedFg)),
                       ),
                     ]),
@@ -321,17 +321,17 @@ class _HelmetTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(children: [
-                          const Icon(Icons.place_outlined,
+                          Icon(Icons.place_outlined,
                               size: 11, color: AppColors.mutedFg),
                           const SizedBox(width: 4),
                           Text(
                               '${helmet.lat.toStringAsFixed(4)}, ${helmet.lng.toStringAsFixed(4)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 10,
                                   color: AppColors.mutedFg)),
                         ]),
                         Text(timeAgo(helmet.lastSeen),
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 10,
                                 color: AppColors.mutedFg)),
                       ],
